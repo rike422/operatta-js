@@ -1,66 +1,69 @@
-var Client = require('../../lib/client');
-var Server = require('../../lib/server');
-var h = require('../helpers');
+import Client from '../../lib/client';
+import Server from '../../lib/server';
+import h from '../helpers';
 
 function inherit (Const, Super) {
-  function F () {}
+  function F () {
+  }
+
   F.prototype = Super.prototype;
   Const.prototype = new F();
   Const.prototype.constructor = Const;
 }
 
+class MyClient {
+  constructor (userId, document, revision, channel) {
+    Client.call(this, revision);
+    this.userId = userId;
+    this.document = document;
+    this.channel = channel;
+  }
 
-function MyClient (userId, document, revision, channel) {
-  Client.call(this, revision);
-  this.userId = userId;
-  this.document = document;
-  this.channel = channel;
+  sendOperation (revision, operation) {
+    this.channel.write({
+      userId: this.userId,
+      revision,
+      operation
+    });
+  }
+
+  applyOperation (operation) {
+    this.document = operation.apply(this.document);
+  }
+
+  performOperation () {
+    var operation = h.randomOperation(this.document);
+    this.document = operation.apply(this.document);
+    this.applyClient(operation);
+  }
 }
 
 inherit(MyClient, Client);
 
-MyClient.prototype.sendOperation = function (revision, operation) {
-  this.channel.write({
-    userId: this.userId,
-    revision: revision,
-    operation: operation
-  });
-};
+class NetworkChannel {
+  constructor (onReceive) {
+    this.buffer = [];
+    this.onReceive = onReceive;
+  }
 
-MyClient.prototype.applyOperation = function (operation) {
-  this.document = operation.apply(this.document);
-};
+  isEmpty () {
+    return this.buffer.length === 0;
+  }
 
-MyClient.prototype.performOperation = function () {
-  var operation = h.randomOperation(this.document);
-  this.document = operation.apply(this.document);
-  this.applyClient(operation);
-};
+  write (val) {
+    this.buffer.push(val);
+  }
 
+  read () {
+    return this.buffer.shift();
+  }
 
-function NetworkChannel (onReceive) {
-  this.buffer = [];
-  this.onReceive = onReceive;
+  receive () {
+    this.onReceive.call(null, this.read());
+  }
 }
 
-NetworkChannel.prototype.isEmpty = function () {
-  return this.buffer.length === 0;
-};
-
-NetworkChannel.prototype.write = function (val) {
-  this.buffer.push(val);
-};
-
-NetworkChannel.prototype.read = function () {
-  return this.buffer.shift();
-};
-
-NetworkChannel.prototype.receive = function () {
-  this.onReceive.call(null, this.read());
-};
-
-
-exports.testClientServerInteraction = h.randomTest(50, function (test) {
+export var testClientServerInteraction = h.randomTest(50, test => {
   var document = h.randomString();
   var userId;
   var server = new Server(document);
@@ -68,13 +71,13 @@ exports.testClientServerInteraction = h.randomTest(50, function (test) {
   function serverReceive (msg) {
     userId = msg.userId;
     var operationP = server.receiveOperation(msg.revision, msg.operation);
-    var broadcast = { userId: userId, operation: operationP };
+    var broadcast = { userId, operation: operationP };
     client1ReceiveChannel.write(broadcast);
     client2ReceiveChannel.write(broadcast);
   }
 
   function clientReceive (client) {
-    return function (obj) {
+    return obj => {
       if (obj.userId === client.userId) {
         client.serverAck();
       } else {
@@ -95,15 +98,15 @@ exports.testClientServerInteraction = h.randomTest(50, function (test) {
 
   function canReceive () {
     for (var i = 0; i < channels.length; i++) {
-      if (!channels[i].isEmpty()) { return true; }
+      if (!channels[i].isEmpty()) {
+        return true;
+      }
     }
     return false;
   }
 
   function receiveRandom () {
-    var channel = h.randomElement(channels.filter(function (c) {
-      return !c.isEmpty();
-    }));
+    var channel = h.randomElement(channels.filter(c => !c.isEmpty()));
     channel.receive();
   }
 

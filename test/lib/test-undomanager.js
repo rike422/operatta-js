@@ -1,39 +1,44 @@
-var UndoManager = require('../../lib/undo-manager');
-var TextOperation = require('../../lib/text-operation');
-var h = require('../helpers');
+import UndoManager from '../../lib/undo-manager';
+import TextOperation from '../../lib/text-operation';
+import h from '../helpers';
 
-function Editor (doc) {
-  this.doc = doc;
-  this.undoManager = new UndoManager();
+class Editor {
+  constructor (doc) {
+    this.doc = doc;
+    this.undoManager = new UndoManager();
+  }
+
+  doEdit (operation, dontCompose) {
+    function last (arr) {
+      return arr[arr.length - 1];
+    }
+
+    var compose = !dontCompose && this.undoManager.undoStack.length > 0 &&
+                  last(this.undoManager.undoStack).invert(this.doc).shouldBeComposedWith(operation);
+    this.undoManager.add(operation.invert(this.doc), compose);
+    this.doc = operation.apply(this.doc);
+  }
+
+  serverEdit (operation) {
+    this.doc = operation.apply(this.doc);
+    this.undoManager.transform(operation);
+  }
 }
 
-Editor.prototype.doEdit = function (operation, dontCompose) {
-  function last (arr) { return arr[arr.length - 1]; }
-  var compose = !dontCompose && this.undoManager.undoStack.length > 0 &&
-    last(this.undoManager.undoStack).invert(this.doc).shouldBeComposedWith(operation);
-  this.undoManager.add(operation.invert(this.doc), compose);
-  this.doc = operation.apply(this.doc);
-};
-
-Editor.prototype.serverEdit = function (operation) {
-  this.doc = operation.apply(this.doc);
-  this.undoManager.transform(operation);
-};
-
-exports.testUndoManager = function (test) {
+export function testUndoManager (test) {
   var editor = new Editor("Looremipsum");
   var undoManager = editor.undoManager;
-  editor.undo = function () {
+  editor.undo = () => {
     test.ok(!undoManager.isUndoing());
-    undoManager.performUndo(function (operation) {
+    undoManager.performUndo(operation => {
       test.ok(undoManager.isUndoing());
       editor.doEdit(operation);
     });
     test.ok(!undoManager.isUndoing());
   };
-  editor.redo = function () {
+  editor.redo = () => {
     test.ok(!undoManager.isRedoing());
-    undoManager.performRedo(function (operation) {
+    undoManager.performRedo(operation => {
       test.ok(undoManager.isRedoing());
       editor.doEdit(operation);
     });
@@ -86,9 +91,9 @@ exports.testUndoManager = function (test) {
   editor.undo();
   test.strictEqual(editor.doc, "LooremIpsum");
   test.done();
-};
+}
 
-exports.testUndoManagerMaxItems = function (test) {
+export function testUndoManagerMaxItems (test) {
   var doc = h.randomString(50);
   var undoManager = new UndoManager(42);
   var operation;
@@ -99,4 +104,4 @@ exports.testUndoManagerMaxItems = function (test) {
   }
   test.strictEqual(undoManager.undoStack.length, 42);
   test.done();
-};
+}

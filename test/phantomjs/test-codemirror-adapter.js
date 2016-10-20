@@ -2,9 +2,9 @@
 
 (function () {
 
-  var Selection         = ot.Selection;
-  var Range             = Selection.Range;
-  var TextOperation     = ot.TextOperation;
+  var Selection = ot.Selection;
+  var Range = Selection.Range;
+  var TextOperation = ot.TextOperation;
   var CodeMirrorAdapter = ot.CodeMirrorAdapter;
 
   function randomEdit (cm) {
@@ -32,7 +32,7 @@
 
   function getDocLength (doc) {
     return doc.indexFromPos({ line: doc.lastLine(), ch: 0 }) +
-      doc.getLine(doc.lastLine()).length;
+           doc.getLine(doc.lastLine()).length;
   }
 
   asyncTest("converting between CodeMirror changes and operations", function () {
@@ -67,8 +67,11 @@
           break;
         }
       }
-      if (n === 0) { start(); }
+      if (n === 0) {
+        start();
+      }
     }
+
     step();
   });
 
@@ -77,14 +80,14 @@
       return Selection.createCursor(randomInt(n));
     } else {
       var ranges = [];
-      var i = randomInt(Math.ceil(n/4));
+      var i = randomInt(Math.ceil(n / 4));
       while (i < n) {
         var from = i;
-        i += 1 + randomInt(Math.ceil(n/8));
+        i += 1 + randomInt(Math.ceil(n / 8));
         var to = Math.min(i, n);
         var range = Math.random() < 0.5 ? new Range(from, to) : new Range(to, from);
         ranges.push(range);
-        i += 1 + randomInt(Math.ceil(n/4));
+        i += 1 + randomInt(Math.ceil(n / 4));
       }
       return new Selection(ranges);
     }
@@ -167,7 +170,9 @@
     var cmAdapter = new CodeMirrorAdapter(cm);
     var blurred = false;
     cmAdapter.registerCallbacks({
-      blur: function () { blurred = true; }
+      blur: function () {
+        blurred = true;
+      }
     });
 
     var textField = document.createElement('input');
@@ -206,8 +211,12 @@
   test("register undo/redo", function () {
     var cm = CodeMirror(document.body, {});
     var cmAdapter = new CodeMirrorAdapter(cm);
-    var undoFn = function () { return "undo!"; };
-    var redoFn = function () { return "redo!"; };
+    var undoFn = function () {
+      return "undo!";
+    };
+    var redoFn = function () {
+      return "redo!";
+    };
     cmAdapter.registerUndo(undoFn);
     cmAdapter.registerRedo(redoFn);
     ok(cm.undo === undoFn);
@@ -218,7 +227,11 @@
     var cm = CodeMirror(document.body, {});
     var cmAdapter = new CodeMirrorAdapter(cm);
     var changes = 0;
-    cmAdapter.registerCallbacks({ change: function () { changes += 1; } });
+    cmAdapter.registerCallbacks({
+      change: function () {
+        changes += 1;
+      }
+    });
     cm.setValue("42");
     ok(changes === 1);
     cmAdapter.detach();
@@ -230,25 +243,33 @@
     var doc = "guten tag!\nlorem ipsum dolor";
     var cm = CodeMirror(document.body, { value: doc });
     var cmAdapter = new CodeMirrorAdapter(cm);
-    var selection1 = new Selection([new Range(3,3), new Range(9,16)]);
+    var selection1 = new Selection([new Range(3, 3), new Range(9, 16)]);
     var handle1 = cmAdapter.setOtherSelection(selection1, '#ff0000', 'tim');
-    deepEqual(cm.getAllMarks().map(function (x) { return x.find(); }), [
+    deepEqual(cm.getAllMarks().map(function (x) {
+      return x.find();
+    }), [
       new CodeMirror.Pos(0, 3),
       { from: new CodeMirror.Pos(0, 9), to: new CodeMirror.Pos(1, 5) }
     ], "the codemirror instance should contain the other user's selection as marks");
-    var selection2 = new Selection([new Range(4,6)]);
+    var selection2 = new Selection([new Range(4, 6)]);
     var handle2 = cmAdapter.setOtherSelection(selection2, '#0000ff', 'tim');
-    deepEqual(cm.getAllMarks().map(function (x) { return x.find(); }), [
+    deepEqual(cm.getAllMarks().map(function (x) {
+      return x.find();
+    }), [
       new CodeMirror.Pos(0, 3),
       { from: new CodeMirror.Pos(0, 9), to: new CodeMirror.Pos(1, 5) },
       { from: new CodeMirror.Pos(0, 4), to: new CodeMirror.Pos(0, 6) }
     ], "the codemirror instance should contain the other users' selection as marks");
     handle1.clear();
-    deepEqual(cm.getAllMarks().map(function (x) { return x.find(); }), [
+    deepEqual(cm.getAllMarks().map(function (x) {
+      return x.find();
+    }), [
       { from: new CodeMirror.Pos(0, 4), to: new CodeMirror.Pos(0, 6) }
     ], "the codemirror instance should contain the other users' selection as marks");
     handle2.clear();
-    deepEqual(cm.getAllMarks().map(function (x) { return x.find(); }), [],
+    deepEqual(cm.getAllMarks().map(function (x) {
+        return x.find();
+      }), [],
       "the codemirror instance should contain no more marks");
   });
 

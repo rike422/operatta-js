@@ -1,8 +1,8 @@
-var TextOperation = require('../../lib/text-operation');
-var Server = require('../../lib/server');
+import TextOperation from '../../lib/text-operation';
+import Server from '../../lib/server';
 
-exports.testStub = function (test) {
+export function testStub (test) {
   // TODO
   console.log("No tests for server yet");
   test.done();
-};
+}

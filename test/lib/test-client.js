@@ -1,39 +1,50 @@
-var TextOperation = require('../../lib/text-operation');
-var Client = require('../../lib/client');
+import TextOperation from '../../lib/text-operation';
+import Client from '../../lib/client';
 
-exports.testClient = function (test) {
+export function testClient (test) {
   var client = new Client(1);
   test.strictEqual(client.revision, 1);
   test.ok(client.state instanceof Client.Synchronized);
 
   var sentRevision = null;
   var sentOperation = null;
+
   function getSentOperation () {
     var a = sentOperation;
-    if (!a) { throw new Error("sendOperation wasn't called"); }
+    if (!a) {
+      throw new Error("sendOperation wasn't called");
+    }
     sentOperation = null;
     return a;
   }
+
   function getSentRevision () {
     var a = sentRevision;
-    if (typeof a !== 'number') { throw new Error("sendOperation wasn't called"); }
+    if (typeof a !== 'number') {
+      throw new Error("sendOperation wasn't called");
+    }
     sentRevision = null;
     return a;
   }
-  client.sendOperation = function (revision, operation) {
+
+  client.sendOperation = (revision, operation) => {
     sentRevision = revision;
     sentOperation = operation;
   };
 
   var doc = "lorem dolor";
   var appliedOperation = null;
+
   function getAppliedOperation () {
     var a = appliedOperation;
-    if (!a) { throw new Error("applyOperation wasn't called"); }
+    if (!a) {
+      throw new Error("applyOperation wasn't called");
+    }
     appliedOperation = null;
     return a;
   }
-  client.applyOperation = function (operation) {
+
+  client.applyOperation = operation => {
     doc = operation.apply(doc);
     appliedOperation = operation;
   };
@@ -103,6 +114,5 @@ exports.testClient = function (test) {
   client.serverAck();
   test.ok(sentOperation.equals(new TextOperation().retain(22).insert('m')));
 
-
   test.done();
-};
+}

@@ -1,11 +1,11 @@
-var WrappedOperation = require('../../lib/wrapped-operation');
-var TextOperation = require('../../lib/text-operation');
-var Selection = require('../../lib/selection');
-var h = require('../helpers');
+import WrappedOperation from '../../lib/wrapped-operation';
+import TextOperation from '../../lib/text-operation';
+import Selection from '../../lib/selection';
+import h from '../helpers';
 
 var n = 20;
 
-exports.testApply = h.randomTest(n, function (test) {
+export var testApply = h.randomTest(n, test => {
   var str = h.randomString(50);
   var operation = h.randomOperation(str);
   var wrapped = new WrappedOperation(operation, { lorem: 42 });
@@ -13,7 +13,7 @@ exports.testApply = h.randomTest(n, function (test) {
   test.strictEqual(wrapped.apply(str), operation.apply(str));
 });
 
-exports.testInvert = h.randomTest(n, function (test) {
+export var testInvert = h.randomTest(n, test => {
   var str = h.randomString(50);
   var operation = h.randomOperation(str);
   var payload = { lorem: 'ipsum' };
@@ -23,16 +23,20 @@ exports.testInvert = h.randomTest(n, function (test) {
   test.strictEqual(str, wrappedInverted.apply(operation.apply(str)));
 });
 
-exports.testInvertMethod = function (test) {
+export function testInvertMethod (test) {
   var str = h.randomString(50);
   var operation = h.randomOperation(str);
-  var meta = { invert: function (doc) { return doc; } };
+  var meta = {
+    invert(doc) {
+      return doc;
+    }
+  };
   var wrapped = new WrappedOperation(operation, meta);
   test.strictEqual(wrapped.invert(str).meta, str);
   test.done();
-};
+}
 
-exports.testCompose = h.randomTest(n, function (test) {
+export var testCompose = h.randomTest(n, test => {
   var str = h.randomString(50);
   var a = new WrappedOperation(h.randomOperation(str), { a: 1, b: 2 });
   var strN = a.apply(str);
@@ -44,10 +48,10 @@ exports.testCompose = h.randomTest(n, function (test) {
   test.strictEqual(ab.apply(str), b.apply(strN));
 });
 
-exports.testComposeMethod = function (test) {
+export function testComposeMethod (test) {
   var meta = {
     timesComposed: 0,
-    compose: function (other) {
+    compose(other) {
       return {
         timesComposed: this.timesComposed + other.timesComposed + 1,
         compose: meta.compose
@@ -61,9 +65,9 @@ exports.testComposeMethod = function (test) {
   var ab = a.compose(b);
   test.strictEqual(ab.meta.timesComposed, 1);
   test.done();
-};
+}
 
-exports.testTransform = h.randomTest(n, function (test) {
+export var testTransform = h.randomTest(n, test => {
   var str = h.randomString(50);
   var metaA = {};
   var a = new WrappedOperation(h.randomOperation(str), metaA);
@@ -77,7 +81,7 @@ exports.testTransform = h.randomTest(n, function (test) {
   test.strictEqual(aPrime.apply(b.apply(str)), bPrime.apply(a.apply(str)));
 });
 
-exports.testTransformMethod = function (test) {
+export function testTransformMethod (test) {
   var str = 'Loorem ipsum';
   var a = new WrappedOperation(
     new TextOperation().retain(1)['delete'](1).retain(10),
@@ -94,4 +98,4 @@ exports.testTransformMethod = function (test) {
   test.ok(aPrime.meta.equals(Selection.createCursor(1)));
   test.ok(bPrime.meta.equals(Selection.createCursor(7)));
   test.done();
-};
+}

@@ -1,16 +1,16 @@
-var TextOperation = require('../../lib/text-operation');
-var h = require('../helpers');
+import TextOperation from '../../lib/text-operation';
+import h from '../helpers';
 
 var n = 500;
 
-exports.testConstructor = function (test) {
+export function testConstructor (test) {
   // you should be able to call the constructor without 'new'
   var o = TextOperation();
   test.strictEqual(o.constructor, TextOperation);
   test.done();
-};
+}
 
-exports.testLengths = function (test) {
+export function testLengths (test) {
   var o = new TextOperation();
   test.strictEqual(0, o.baseLength);
   test.strictEqual(0, o.targetLength);
@@ -27,9 +27,9 @@ exports.testLengths = function (test) {
   test.strictEqual(9, o.baseLength);
   test.strictEqual(10, o.targetLength);
   test.done();
-};
+}
 
-exports.testChaining = function (test) {
+export function testChaining (test) {
   var o = new TextOperation()
     .retain(5)
     .retain(0)
@@ -41,16 +41,16 @@ exports.testChaining = function (test) {
     ['delete']("");
   test.strictEqual(3, o.ops.length);
   test.done();
-};
+}
 
-exports.testApply = h.randomTest(n, function (test) {
+export var testApply = h.randomTest(n, test => {
   var str = h.randomString(50);
   var o = h.randomOperation(str);
   test.strictEqual(str.length, o.baseLength);
   test.strictEqual(o.apply(str).length, o.targetLength);
 });
 
-exports.testInvert = h.randomTest(n, function (test) {
+export var testInvert = h.randomTest(n, test => {
   var str = h.randomString(50);
   var o = h.randomOperation(str);
   var p = o.invert(str);
@@ -59,16 +59,16 @@ exports.testInvert = h.randomTest(n, function (test) {
   test.strictEqual(p.apply(o.apply(str)), str);
 });
 
-exports.testEmptyOps = function (test) {
+export function testEmptyOps (test) {
   var o = new TextOperation();
   o.retain(0);
   o.insert('');
   o['delete']('');
   test.strictEqual(0, o.ops.length);
   test.done();
-};
+}
 
-exports.testEquals = function (test) {
+export function testEquals (test) {
   var op1 = new TextOperation()['delete'](1).insert("lo").retain(2).retain(3);
   var op2 = new TextOperation()['delete'](-1).insert("l").insert("o").retain(5);
   test.ok(op1.equals(op2));
@@ -76,10 +76,13 @@ exports.testEquals = function (test) {
   op2.retain(1);
   test.ok(!op1.equals(op2));
   test.done();
-};
+}
 
-exports.testOpsMerging = function (test) {
-  function last (arr) { return arr[arr.length-1]; }
+export function testOpsMerging (test) {
+  function last (arr) {
+    return arr[arr.length - 1];
+  }
+
   var o = new TextOperation();
   test.strictEqual(0, o.ops.length);
   o.retain(2);
@@ -101,9 +104,9 @@ exports.testOpsMerging = function (test) {
   test.strictEqual(3, o.ops.length);
   test.strictEqual(-2, last(o.ops));
   test.done();
-};
+}
 
-exports.testIsNoop = function (test) {
+export function testIsNoop (test) {
   var o = new TextOperation();
   test.ok(o.isNoop());
   o.retain(5);
@@ -113,9 +116,9 @@ exports.testIsNoop = function (test) {
   o.insert("lorem");
   test.ok(!o.isNoop());
   test.done();
-};
+}
 
-exports.testToString = function (test) {
+export function testToString (test) {
   var o = new TextOperation();
   o.retain(2);
   o.insert('lorem');
@@ -123,15 +126,15 @@ exports.testToString = function (test) {
   o.retain(5);
   test.strictEqual("retain 2, insert 'lorem', delete 5, retain 5", o.toString());
   test.done();
-};
+}
 
-exports.testIdJSON = h.randomTest(n, function (test) {
+export var testIdJSON = h.randomTest(n, test => {
   var doc = h.randomString(50);
   var operation = h.randomOperation(doc);
   test.ok(operation.equals(TextOperation.fromJSON(operation.toJSON())));
 });
 
-exports.testFromJSON = function (test) {
+export function testFromJSON (test) {
   var ops = [2, -1, -1, 'cde'];
   var o = TextOperation.fromJSON(ops);
   test.strictEqual(3, o.ops.length);
@@ -141,17 +144,27 @@ exports.testFromJSON = function (test) {
   function assertIncorrectAfter (fn) {
     var ops2 = ops.slice(0);
     fn(ops2);
-    test.throws(function () { TextOperation.fromJSON(ops2); });
+    test.throws(() => {
+      TextOperation.fromJSON(ops2);
+    });
   }
 
-  assertIncorrectAfter(function (ops2) { ops2.push({ insert: 'x' }); });
-  assertIncorrectAfter(function (ops2) { ops2.push(null); });
+  assertIncorrectAfter(ops2 => {
+    ops2.push({ insert: 'x' });
+  });
+  assertIncorrectAfter(ops2 => {
+    ops2.push(null);
+  });
   test.done();
-};
+}
 
-exports.testShouldBeComposedWith = function (test) {
-  function make () { return new TextOperation(); }
-  var a, b;
+export function testShouldBeComposedWith (test) {
+  function make () {
+    return new TextOperation();
+  }
+
+  var a;
+  var b;
 
   a = make().retain(3);
   b = make().retain(1).insert("tag").retain(2);
@@ -177,9 +190,9 @@ exports.testShouldBeComposedWith = function (test) {
   test.ok(!a.shouldBeComposedWith(b));
 
   test.done();
-};
+}
 
-exports.testShouldBeComposedWithInverted = h.randomTest(2*n, function (test) {
+export var testShouldBeComposedWithInverted = h.randomTest(2 * n, test => {
   // invariant: shouldBeComposedWith(a, b) = shouldBeComposedWithInverted(b^{-1}, a^{-1})
   var str = h.randomString();
   var a = h.randomOperation(str);
@@ -190,7 +203,7 @@ exports.testShouldBeComposedWithInverted = h.randomTest(2*n, function (test) {
   test.strictEqual(a.shouldBeComposedWith(b), bInv.shouldBeComposedWithInverted(aInv));
 });
 
-exports.testCompose = h.randomTest(n, function (test) {
+export var testCompose = h.randomTest(n, test => {
   // invariant: apply(str, compose(a, b)) === apply(apply(str, a), b)
   var str = h.randomString(20);
   var a = h.randomOperation(str);
@@ -206,7 +219,7 @@ exports.testCompose = h.randomTest(n, function (test) {
   test.strictEqual(afterB, afterAB);
 });
 
-exports.testTransform = h.randomTest(n, function (test) {
+export var testTransform = h.randomTest(n, test => {
   // invariant: compose(a, b') = compose(b, a')
   // where (a', b') = transform(a, b)
   var str = h.randomString(20);

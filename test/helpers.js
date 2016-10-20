@@ -1,4 +1,4 @@
-(function (exports) {
+((exports => {
 
   var TextOperation = typeof exports.ot === 'object' ? exports.ot.TextOperation
     : require('../lib/text-operation');
@@ -25,7 +25,9 @@
     var left;
     while (true) {
       left = str.length - operation.baseLength;
-      if (left === 0) { break; }
+      if (left === 0) {
+        break;
+      }
       var r = Math.random();
       var l = 1 + randomInt(Math.min(left - 1, 20));
       if (r < 0.2) {
@@ -49,7 +51,7 @@
   // A random test generates random data to check some invariants. To increase
   // confidence in a random test, it is run repeatedly.
   function randomTest (n, fun) {
-    return function (test) {
+    return test => {
       while (n--) {
         fun(test);
       }
@@ -63,4 +65,4 @@
   exports.randomElement = randomElement;
   exports.randomTest = randomTest;
 
-})(typeof exports === 'object' ? exports : this);
+}))(typeof exports === 'object' ? exports : this);

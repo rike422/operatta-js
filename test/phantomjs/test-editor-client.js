@@ -21,13 +21,19 @@
     this.callbacks = cb;
   };
 
-  EditorAdapterStub.prototype.registerUndo = function (undo) { this.undo = undo; };
-  EditorAdapterStub.prototype.registerRedo = function (redo) { this.redo = redo; };
+  EditorAdapterStub.prototype.registerUndo = function (undo) {
+    this.undo = undo;
+  };
+  EditorAdapterStub.prototype.registerRedo = function (redo) {
+    this.redo = redo;
+  };
 
   EditorAdapterStub.prototype.trigger = function (event) {
     var args = Array.prototype.slice.call(arguments, 1);
     var action = this.callbacks && this.callbacks[event];
-    if (action) { action.apply(this, args); }
+    if (action) {
+      action.apply(this, args);
+    }
   };
 
   EditorAdapterStub.prototype.getValue = function () {
@@ -59,7 +65,9 @@
     otherSelections.push(selectionObj);
     return {
       clear: function () {
-        if (cleared) { throw new Error("already cleared!"); }
+        if (cleared) {
+          throw new Error("already cleared!");
+        }
         cleared = true;
         otherSelections.splice(otherSelections.indexOf(selectionObj), 1);
       }
@@ -78,7 +86,6 @@
     }
   };
 
-
   function ServerAdapterStub () {
     this.sentOperation = this.sentSelection = null;
   }
@@ -96,12 +103,13 @@
   };
 
   var revision, initialDoc, clients, serverAdapter, editorAdapter, editorClient;
+
   function setup () {
     revision = 1;
     initialDoc = "lorem dolor";
     clients = {
       'enihcam': { name: "Tim", selection: { ranges: [{ anchor: 0, head: 0 }, { anchor: 2, head: 4 }] } },
-      'baia':    { name: "Jan", selection: { ranges: [{ anchor: 6, head: 7 }] } }
+      'baia': { name: "Jan", selection: { ranges: [{ anchor: 6, head: 7 }] } }
     };
     serverAdapter = new ServerAdapterStub();
     editorAdapter = new EditorAdapterStub(initialDoc, Selection.createCursor(11));
@@ -220,7 +228,7 @@
     setup();
 
     strictEqual(editorClient.clientListEl.childNodes.length, 2);
-    var firstLi  = editorClient.clientListEl.childNodes[0];
+    var firstLi = editorClient.clientListEl.childNodes[0];
     var secondLi = editorClient.clientListEl.childNodes[1];
     strictEqual(firstLi.tagName.toLowerCase(), 'li');
     strictEqual(firstLi.innerHTML, "Tim");
@@ -292,7 +300,7 @@
     // We get an update consisting of the state of all connected users:
     // Tim rejoined, Jan left, Nina updated her cursor
     serverAdapter.trigger('clients', {
-      'enihcam':     { name: "Tim", selection: null },
+      'enihcam': { name: "Tim", selection: null },
       'emit-remmus': { name: "Nina", selection: { ranges: [{ anchor: 0, head: 0 }] } }
     });
     strictEqual(editorClient.clientListEl.childNodes.length, 2);
