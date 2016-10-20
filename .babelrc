@@ -1,0 +1,13 @@
+{
+  "presets": [
+    "es2015",
+    "es2017",
+    "stage-0"
+  ],
+  "plugins": [
+    "babel-plugin-transform-flow-strip-types",
+    "transform-decorators-legacy",
+    "babel-plugin-espower",
+    "transform-object-rest-spread"
+  ]
+}
