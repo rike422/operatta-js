@@ -16,7 +16,8 @@
 
 ## Todo
 
-* Implementation
+### Implementation
+
 - [ ] Ace integration
 - [ ] Textarea integration
 - [ ] Demo App
