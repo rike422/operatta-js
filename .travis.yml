@@ -1,7 +1,35 @@
-language: node_js
-before_script:
+sudo: required
 
+services:
+  - docker
+
+language: node_js
 node_js:
-  - 0.10
-notifications:
-  irc: "irc.freenode.org#tree"
+  - "6.1.0"
+  - "5.11.1"
+  - "4.4.7"
+
+cache:
+  directories:
+    - node_modules
+
+env:
+  global:
+    - RAILS_ENV=test
+    - DRIVER=selenium_chrome
+    - CHROME_BIN=/usr/bin/google-chrome
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y xvfb libappindicator1 fonts-liberation
+  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  - sudo dpkg -i google-chrome*.deb
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen scn 1600x1200x16"
+
+install:
+  - npm config set spin false
+  - npm install -g yarn
+  - yarn
+
+script:
+  - rake
