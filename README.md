@@ -13,3 +13,12 @@
 [npm-url]: https://npmjs.org/package/ot
 [travis-image]: https://img.shields.io/travis/Operational-Transformation/ot.js.svg?style=flat
 [travis-url]: https://travis-ci.org/Operational-Transformation/ot.js
+
+## Todo
+
+* Implementation
+- [ ] Ace integration
+- [ ] Textarea integration
+- [ ] Demo App
+- [ ] [for Rails Gem](https://github.com/rike422/loose-leaf)
+
