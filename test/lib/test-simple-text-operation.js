@@ -1,11 +1,11 @@
-import SimpleTextOperation from '../../lib/simple-text-operation';
-import h from '../helpers';
+import SimpleTextOperation from 'lib/simple-text-operation';
+import h from '../helpers/test-helper';
 
-var n = 500;
+const n = 500;
 
-var Insert = SimpleTextOperation.Insert;
-var Delete = SimpleTextOperation.Delete;
-var Noop = SimpleTextOperation.Noop;
+const Insert = SimpleTextOperation.Insert;
+const Delete = SimpleTextOperation.Delete;
+const Noop = SimpleTextOperation.Noop;
 
 function randomSimpleTextOperation (doc) {
   if (Math.random() < 0.5) {
@@ -19,41 +19,44 @@ function randomSimpleTextOperation (doc) {
     return new Noop();
   }
 
-  var position = h.randomInt(doc.length);
-  var count = 1 + h.randomInt(Math.min(10, doc.length - position));
+  const position = h.randomInt(doc.length);
+  const count = 1 + h.randomInt(Math.min(10, doc.length - position));
   return Delete(count, position);
 }
 
-export function testApply (test) {
-  test.strictEqual("Hallo Welt!", new Insert("Welt", 6).apply("Hallo !"));
-  test.strictEqual("Hallo !", new Delete(4, 6).apply("Hallo Welt!"));
-  test.strictEqual("Hallo Welt!", new Noop().apply("Hallo Welt!"));
-  test.done();
-}
+test('Test SimpleTextOperation#apply', t => {
+  t.deepEqual("Hallo Welt!", new Insert("Welt", 6).apply("Hallo !"));
+  t.deepEqual("Hallo !", new Delete(4, 6).apply("Hallo Welt!"));
+  t.deepEqual("Hallo Welt!", new Noop().apply("Hallo Welt!"));
+})
 
-export var testTransform = h.randomTest(n, test => {
-  var doc = h.randomString(15);
-  var a = randomSimpleTextOperation(doc);
-  var b = randomSimpleTextOperation(doc);
-  var abPrime = SimpleTextOperation.transform(a, b);
-  if (abPrime[0].apply(b.apply(doc)) !== abPrime[1].apply(a.apply(doc))) {
-    console.log("------------------------");
-    console.log(doc);
-    console.log(a.toString());
-    console.log(b.toString());
-    console.log(abPrime[0].toString());
-    console.log(abPrime[1].toString());
-  }
-  test.strictEqual(abPrime[0].apply(b.apply(doc)), abPrime[1].apply(a.apply(doc)));
+test('Test SimpleTextOperation.transform', t => {
+  h.randomTest(n, () => {
+    const doc = h.randomString(15);
+    const a = randomSimpleTextOperation(doc);
+    const b = randomSimpleTextOperation(doc);
+    const abPrime = SimpleTextOperation.transform(a, b);
+    if (abPrime[0].apply(b.apply(doc)) !== abPrime[1].apply(a.apply(doc))) {
+      console.log("------------------------");
+      console.log(doc);
+      console.log(a.toString());
+      console.log(b.toString());
+      console.log(abPrime[0].toString());
+      console.log(abPrime[1].toString());
+    }
+    t.deepEqual(abPrime[0].apply(b.apply(doc)), abPrime[1].apply(a.apply(doc)));
+  })
 });
 
-export var testFromTextOperation = h.randomTest(n, test => {
-  var doc = h.randomString(40);
-  var operation = h.randomOperation(doc);
-  var doc1 = operation.apply(doc);
-  var simpleOperations = SimpleTextOperation.fromTextOperation(operation);
-  for (var i = 0; i < simpleOperations.length; i++) {
-    doc = simpleOperations[i].apply(doc);
-  }
-  test.strictEqual(doc1, doc);
-});
+test('Test SimpleTextOperation.fromTextOperation', t => {
+  h.randomTest(n, () => {
+    let doc = h.randomString(40);
+    const operation = h.randomOperation(doc);
+    const doc1 = operation.apply(doc);
+    const simpleOperations = SimpleTextOperation.fromTextOperation(operation);
+    for (let i = 0; i < simpleOperations.length; i++) {
+      doc = simpleOperations[i].apply(doc);
+    }
+    t.deepEqual(doc1, doc);
+  })
+})

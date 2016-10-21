@@ -1,36 +1,34 @@
-import TextOperation from '../../lib/text-operation';
-import h from '../helpers';
+import TextOperation from 'lib/text-operation'
+import h from '../helpers/test-helper'
 
-var n = 500;
+const n = 500;
 
-export function testConstructor (test) {
+test('Test TextOperation.testConstructor', (t) => {
   // you should be able to call the constructor without 'new'
-  var o = TextOperation();
-  test.strictEqual(o.constructor, TextOperation);
-  test.done();
-}
+  const o = new TextOperation();
+  t.deepEqual(o.constructor, TextOperation);
+});
 
-export function testLengths (test) {
-  var o = new TextOperation();
-  test.strictEqual(0, o.baseLength);
-  test.strictEqual(0, o.targetLength);
+test('Test TextOperation.testLengths', (t) => {
+  const o = new TextOperation();
+  t.deepEqual(0, o.baseLength);
+  t.deepEqual(0, o.targetLength);
   o.retain(5);
-  test.strictEqual(5, o.baseLength);
-  test.strictEqual(5, o.targetLength);
+  t.deepEqual(5, o.baseLength);
+  t.deepEqual(5, o.targetLength);
   o.insert("abc");
-  test.strictEqual(5, o.baseLength);
-  test.strictEqual(8, o.targetLength);
+  t.deepEqual(5, o.baseLength);
+  t.deepEqual(8, o.targetLength);
   o.retain(2);
-  test.strictEqual(7, o.baseLength);
-  test.strictEqual(10, o.targetLength);
+  t.deepEqual(7, o.baseLength);
+  t.deepEqual(10, o.targetLength);
   o['delete'](2);
-  test.strictEqual(9, o.baseLength);
-  test.strictEqual(10, o.targetLength);
-  test.done();
-}
+  t.deepEqual(9, o.baseLength);
+  t.deepEqual(10, o.targetLength);
+})
 
-export function testChaining (test) {
-  var o = new TextOperation()
+test('Test TextOperation.testChaining', (t) => {
+  const o = new TextOperation()
     .retain(5)
     .retain(0)
     .insert("lorem")
@@ -39,112 +37,112 @@ export function testChaining (test) {
     ['delete'](3)
     ['delete'](0)
     ['delete']("");
-  test.strictEqual(3, o.ops.length);
-  test.done();
-}
+  t.deepEqual(3, o.ops.length);
+})
 
-export var testApply = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var o = h.randomOperation(str);
-  test.strictEqual(str.length, o.baseLength);
-  test.strictEqual(o.apply(str).length, o.targetLength);
-});
+test('Test TextOperation#apply', (t) => {
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const o = h.randomOperation(str);
+    t.deepEqual(str.length, o.baseLength);
+    t.deepEqual(o.apply(str).length, o.targetLength);
+  })
+})
 
-export var testInvert = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var o = h.randomOperation(str);
-  var p = o.invert(str);
-  test.strictEqual(o.baseLength, p.targetLength);
-  test.strictEqual(o.targetLength, p.baseLength);
-  test.strictEqual(p.apply(o.apply(str)), str);
-});
+test('Test TextOperation#invert', (t) => {
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const o = h.randomOperation(str);
+    const p = o.invert(str);
+    t.deepEqual(o.baseLength, p.targetLength);
+    t.deepEqual(o.targetLength, p.baseLength);
+    t.deepEqual(p.apply(o.apply(str)), str);
+  })
+})
 
-export function testEmptyOps (test) {
-  var o = new TextOperation();
+test('Test TextOperation#Empty', (t) => {
+  const o = new TextOperation();
   o.retain(0);
   o.insert('');
   o['delete']('');
-  test.strictEqual(0, o.ops.length);
-  test.done();
-}
+  t.deepEqual(0, o.ops.length);
+})
 
-export function testEquals (test) {
-  var op1 = new TextOperation()['delete'](1).insert("lo").retain(2).retain(3);
-  var op2 = new TextOperation()['delete'](-1).insert("l").insert("o").retain(5);
-  test.ok(op1.equals(op2));
+test('Test TextOperation#equals', (t) => {
+  const op1 = new TextOperation()['delete'](1).insert("lo").retain(2).retain(3);
+  const op2 = new TextOperation()['delete'](-1).insert("l").insert("o").retain(5);
+  t.ok(op1.equals(op2));
   op1['delete'](1);
   op2.retain(1);
-  test.ok(!op1.equals(op2));
-  test.done();
-}
+  t.ok(!op1.equals(op2));
+})
 
-export function testOpsMerging (test) {
+test('Test TextOperation merging', (t) => {
   function last (arr) {
     return arr[arr.length - 1];
   }
 
-  var o = new TextOperation();
-  test.strictEqual(0, o.ops.length);
+  const o = new TextOperation();
+  t.deepEqual(0, o.ops.length);
   o.retain(2);
-  test.strictEqual(1, o.ops.length);
-  test.strictEqual(2, last(o.ops));
+  t.deepEqual(1, o.ops.length);
+  t.deepEqual(2, last(o.ops));
   o.retain(3);
-  test.strictEqual(1, o.ops.length);
-  test.strictEqual(5, last(o.ops));
+  t.deepEqual(1, o.ops.length);
+  t.deepEqual(5, last(o.ops));
   o.insert("abc");
-  test.strictEqual(2, o.ops.length);
-  test.strictEqual("abc", last(o.ops));
+  t.deepEqual(2, o.ops.length);
+  t.deepEqual("abc", last(o.ops));
   o.insert("xyz");
-  test.strictEqual(2, o.ops.length);
-  test.strictEqual("abcxyz", last(o.ops));
+  t.deepEqual(2, o.ops.length);
+  t.deepEqual("abcxyz", last(o.ops));
   o['delete']("d");
-  test.strictEqual(3, o.ops.length);
-  test.strictEqual(-1, last(o.ops));
+  t.deepEqual(3, o.ops.length);
+  t.deepEqual(-1, last(o.ops));
   o['delete']("d");
-  test.strictEqual(3, o.ops.length);
-  test.strictEqual(-2, last(o.ops));
-  test.done();
-}
+  t.deepEqual(3, o.ops.length);
+  t.deepEqual(-2, last(o.ops));
+})
 
-export function testIsNoop (test) {
-  var o = new TextOperation();
-  test.ok(o.isNoop());
+test('Test TextOperation IsNoop', (t) => {
+  const o = new TextOperation();
+  t.ok(o.isNoop());
   o.retain(5);
-  test.ok(o.isNoop());
+  t.ok(o.isNoop());
   o.retain(3);
-  test.ok(o.isNoop());
+  t.ok(o.isNoop());
   o.insert("lorem");
-  test.ok(!o.isNoop());
-  test.done();
-}
+  t.ok(!o.isNoop());
+})
 
-export function testToString (test) {
-  var o = new TextOperation();
+test('Test TextOperation#toString', (t) => {
+  const o = new TextOperation();
   o.retain(2);
   o.insert('lorem');
   o['delete']('ipsum');
   o.retain(5);
-  test.strictEqual("retain 2, insert 'lorem', delete 5, retain 5", o.toString());
-  test.done();
-}
+  t.deepEqual("retain 2, insert 'lorem', delete 5, retain 5", o.toString());
+})
 
-export var testIdJSON = h.randomTest(n, test => {
-  var doc = h.randomString(50);
-  var operation = h.randomOperation(doc);
-  test.ok(operation.equals(TextOperation.fromJSON(operation.toJSON())));
-});
+test('Test TextOperation#IdString', (t) => {
+  h.randomTest(n, () => {
+    const doc = h.randomString(50);
+    const operation = h.randomOperation(doc);
+    t.ok(operation.equals(TextOperation.fromJSON(operation.toJSON())));
+  });
+})
 
-export function testFromJSON (test) {
-  var ops = [2, -1, -1, 'cde'];
-  var o = TextOperation.fromJSON(ops);
-  test.strictEqual(3, o.ops.length);
-  test.strictEqual(4, o.baseLength);
-  test.strictEqual(5, o.targetLength);
+test('Test TextOperation.fromJson', (t) => {
+  const ops = [2, -1, -1, 'cde'];
+  const o = TextOperation.fromJSON(ops);
+  t.deepEqual(3, o.ops.length);
+  t.deepEqual(4, o.baseLength);
+  t.deepEqual(5, o.targetLength);
 
   function assertIncorrectAfter (fn) {
-    var ops2 = ops.slice(0);
+    const ops2 = ops.slice(0);
     fn(ops2);
-    test.throws(() => {
+    t.throws(() => {
       TextOperation.fromJSON(ops2);
     });
   }
@@ -155,83 +153,87 @@ export function testFromJSON (test) {
   assertIncorrectAfter(ops2 => {
     ops2.push(null);
   });
-  test.done();
-}
+})
+test('Test TextOperation should be compose with', (t) => {
 
-export function testShouldBeComposedWith (test) {
   function make () {
     return new TextOperation();
   }
 
-  var a;
-  var b;
+  let a;
+  let b;
 
   a = make().retain(3);
   b = make().retain(1).insert("tag").retain(2);
-  test.ok(a.shouldBeComposedWith(b));
-  test.ok(b.shouldBeComposedWith(a));
+  t.ok(a.shouldBeComposedWith(b));
+  t.ok(b.shouldBeComposedWith(a));
 
   a = make().retain(1).insert("a").retain(2);
   b = make().retain(2).insert("b").retain(2);
-  test.ok(a.shouldBeComposedWith(b));
+  t.ok(a.shouldBeComposedWith(b));
   a['delete'](3);
-  test.ok(!a.shouldBeComposedWith(b));
+  t.ok(!a.shouldBeComposedWith(b));
 
   a = make().retain(1).insert("b").retain(2);
   b = make().retain(1).insert("a").retain(3);
-  test.ok(!a.shouldBeComposedWith(b));
+  t.ok(!a.shouldBeComposedWith(b));
 
   a = make().retain(4)['delete'](3).retain(10);
   b = make().retain(2)['delete'](2).retain(10);
-  test.ok(a.shouldBeComposedWith(b));
+  t.ok(a.shouldBeComposedWith(b));
   b = make().retain(4)['delete'](7).retain(3);
-  test.ok(a.shouldBeComposedWith(b));
+  t.ok(a.shouldBeComposedWith(b));
   b = make().retain(2)['delete'](9).retain(3);
-  test.ok(!a.shouldBeComposedWith(b));
+  t.ok(!a.shouldBeComposedWith(b));
+})
 
-  test.done();
-}
-
-export var testShouldBeComposedWithInverted = h.randomTest(2 * n, test => {
-  // invariant: shouldBeComposedWith(a, b) = shouldBeComposedWithInverted(b^{-1}, a^{-1})
-  var str = h.randomString();
-  var a = h.randomOperation(str);
-  var aInv = a.invert(str);
-  var afterA = a.apply(str);
-  var b = h.randomOperation(afterA);
-  var bInv = b.invert(afterA);
-  test.strictEqual(a.shouldBeComposedWith(b), bInv.shouldBeComposedWithInverted(aInv));
+test('Test TextOperation should be compose with inverted', (t) => {
+  h.randomTest(2 * n, () => {
+    // invariant: shouldBeComposedWith(a, b) = shouldBeComposedWithInverted(b^{-1}, a^{-1})
+    const str = h.randomString();
+    const a = h.randomOperation(str);
+    const aInv = a.invert(str);
+    const afterA = a.apply(str);
+    const b = h.randomOperation(afterA);
+    const bInv = b.invert(afterA);
+    t.deepEqual(a.shouldBeComposedWith(b), bInv.shouldBeComposedWithInverted(aInv));
+  });
 });
 
-export var testCompose = h.randomTest(n, test => {
-  // invariant: apply(str, compose(a, b)) === apply(apply(str, a), b)
-  var str = h.randomString(20);
-  var a = h.randomOperation(str);
-  var afterA = a.apply(str);
-  test.strictEqual(a.targetLength, afterA.length);
-  var b = h.randomOperation(afterA);
-  var afterB = b.apply(afterA);
-  test.strictEqual(b.targetLength, afterB.length);
-  var ab = a.compose(b);
-  test.strictEqual(ab.meta, a.meta);
-  test.strictEqual(ab.targetLength, b.targetLength);
-  var afterAB = ab.apply(str);
-  test.strictEqual(afterB, afterAB);
+test('Test TextOperation#compose', (t) => {
+  h.randomTest(n, () => {
+    // invariant: apply(str, compose(a, b)) === apply(apply(str, a), b)
+    const str = h.randomString(20);
+    const a = h.randomOperation(str);
+    const afterA = a.apply(str);
+    t.deepEqual(a.targetLength, afterA.length);
+    const b = h.randomOperation(afterA);
+    const afterB = b.apply(afterA);
+    t.deepEqual(b.targetLength, afterB.length);
+    const ab = a.compose(b);
+    t.deepEqual(ab.meta, a.meta);
+    t.deepEqual(ab.targetLength, b.targetLength);
+    const afterAB = ab.apply(str);
+    t.deepEqual(afterB, afterAB);
+  });
 });
 
-export var testTransform = h.randomTest(n, test => {
-  // invariant: compose(a, b') = compose(b, a')
-  // where (a', b') = transform(a, b)
-  var str = h.randomString(20);
-  var a = h.randomOperation(str);
-  var b = h.randomOperation(str);
-  var primes = TextOperation.transform(a, b);
-  var aPrime = primes[0];
-  var bPrime = primes[1];
-  var abPrime = a.compose(bPrime);
-  var baPrime = b.compose(aPrime);
-  var afterAbPrime = abPrime.apply(str);
-  var afterBaPrime = baPrime.apply(str);
-  test.ok(abPrime.equals(baPrime));
-  test.strictEqual(afterAbPrime, afterBaPrime);
+test('Test TextOperation#transfomr', (t) => {
+  h.randomTest(n, () => {
+    // invariant: compose(a, b') = compose(b, a')
+    // where (a', b') = transform(a, b)
+    const str = h.randomString(20);
+    const a = h.randomOperation(str);
+    const b = h.randomOperation(str);
+    const primes = TextOperation.transform(a, b);
+    const aPrime = primes[0];
+    const bPrime = primes[1];
+    const abPrime = a.compose(bPrime);
+    const baPrime = b.compose(aPrime);
+    const afterAbPrime = abPrime.apply(str);
+    const afterBaPrime = baPrime.apply(str);
+    t.ok(abPrime.equals(baPrime));
+    t.deepEqual(afterAbPrime, afterBaPrime);
+  });
 });
+
