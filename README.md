@@ -1,3 +1,5 @@
+# Operetta
+
 * Documentation: http://operational-transformation.github.io/
 * Compatibility: Requires CodeMirror >= 4.0
 * Live demo: http://ot-demo.timbaumann.info/

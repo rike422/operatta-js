@@ -1,8 +1,8 @@
 {
-  "name": "ot",
+  "name": "operetta",
   "description": "Collaborative editing using operational transformation",
-  "version": "0.0.15",
-  "author": "Tim Baumann <tim@timbaumann.info> (http://timbaumann.info)",
+  "version": "0.0.1",
+  "author": ["Akria Takahashi <rike422@gmail.com>", "Tim Baumann <tim@timbaumann.info> (http://timbaumann.info)"],
   "bugs": {
     "url": "https://github.com/rike422/ot.js/issues"
   },
@@ -48,7 +48,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/github.com/operational-transformation/ot.js/raw/master/LICENSE"
+      "url": "https://github.com/github.com/rike422/operetta/raw/master/LICENSE"
     }
   ],
   "main": "./lib/index.js",
