@@ -1,55 +1,62 @@
-import WrappedOperation from '../../lib/wrapped-operation';
-import TextOperation from '../../lib/text-operation';
-import Selection from '../../lib/selection';
-import h from '../helpers';
+import WrappedOperation from 'lib/wrapped-operation'
+import TextOperation from 'lib/text-operation'
+import Selection from 'lib/selection'
+import h from '../helpers/test-helper'
 
-var n = 20;
+const n = 20;
 
-export var testApply = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var operation = h.randomOperation(str);
-  var wrapped = new WrappedOperation(operation, { lorem: 42 });
-  test.strictEqual(wrapped.meta.lorem, 42);
-  test.strictEqual(wrapped.apply(str), operation.apply(str));
+test('WrappedOperation#apply', t => {
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const operation = h.randomOperation(str);
+    const wrapped = new WrappedOperation(operation, { lorem: 42 });
+    t.deepEqual(wrapped.meta.lorem, 42);
+    t.deepEqual(wrapped.apply(str), operation.apply(str));
+  });
+
+})
+
+test('WrappedOperation#invert', t => {
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const operation = h.randomOperation(str);
+    const payload = { lorem: 'ipsum' };
+    const wrapped = new WrappedOperation(operation, payload);
+    const wrappedInverted = wrapped.invert(str);
+    t.deepEqual(wrappedInverted.meta, payload);
+    t.deepEqual(str, wrappedInverted.apply(operation.apply(str)));
+  });
 });
 
-export var testInvert = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var operation = h.randomOperation(str);
-  var payload = { lorem: 'ipsum' };
-  var wrapped = new WrappedOperation(operation, payload);
-  var wrappedInverted = wrapped.invert(str);
-  test.strictEqual(wrappedInverted.meta, payload);
-  test.strictEqual(str, wrappedInverted.apply(operation.apply(str)));
-});
-
-export function testInvertMethod (test) {
-  var str = h.randomString(50);
-  var operation = h.randomOperation(str);
-  var meta = {
+test('WrappedOperation#invert', t => {
+  const str = h.randomString(50);
+  const operation = h.randomOperation(str);
+  const meta = {
     invert(doc) {
       return doc;
     }
   };
-  var wrapped = new WrappedOperation(operation, meta);
-  test.strictEqual(wrapped.invert(str).meta, str);
-  test.done();
-}
-
-export var testCompose = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var a = new WrappedOperation(h.randomOperation(str), { a: 1, b: 2 });
-  var strN = a.apply(str);
-  var b = new WrappedOperation(h.randomOperation(strN), { a: 3, c: 4 });
-  var ab = a.compose(b);
-  test.strictEqual(ab.meta.a, 3);
-  test.strictEqual(ab.meta.b, 2);
-  test.strictEqual(ab.meta.c, 4);
-  test.strictEqual(ab.apply(str), b.apply(strN));
+  const wrapped = new WrappedOperation(operation, meta);
+  t.deepEqual(wrapped.invert(str).meta, str);
 });
 
-export function testComposeMethod (test) {
-  var meta = {
+test('WrappedOperation#compse', t => {
+
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const a = new WrappedOperation(h.randomOperation(str), { a: 1, b: 2 });
+    const strN = a.apply(str);
+    const b = new WrappedOperation(h.randomOperation(strN), { a: 3, c: 4 });
+    const ab = a.compose(b);
+    t.deepEqual(ab.meta.a, 3);
+    t.deepEqual(ab.meta.b, 2);
+    t.deepEqual(ab.meta.c, 4);
+    t.deepEqual(ab.apply(str), b.apply(strN));
+  });
+});
+
+test('WrappedOperation#compse', t => {
+  const meta = {
     timesComposed: 0,
     compose(other) {
       return {
@@ -58,44 +65,44 @@ export function testComposeMethod (test) {
       };
     }
   };
-  var str = h.randomString(50);
-  var a = new WrappedOperation(h.randomOperation(str), meta);
-  var strN = a.apply(str);
-  var b = new WrappedOperation(h.randomOperation(strN), meta);
-  var ab = a.compose(b);
-  test.strictEqual(ab.meta.timesComposed, 1);
-  test.done();
-}
-
-export var testTransform = h.randomTest(n, test => {
-  var str = h.randomString(50);
-  var metaA = {};
-  var a = new WrappedOperation(h.randomOperation(str), metaA);
-  var metaB = {};
-  var b = new WrappedOperation(h.randomOperation(str), metaB);
-  var pair = WrappedOperation.transform(a, b);
-  var aPrime = pair[0];
-  var bPrime = pair[1];
-  test.strictEqual(aPrime.meta, metaA);
-  test.strictEqual(bPrime.meta, metaB);
-  test.strictEqual(aPrime.apply(b.apply(str)), bPrime.apply(a.apply(str)));
+  const str = h.randomString(50);
+  const a = new WrappedOperation(h.randomOperation(str), meta);
+  const strN = a.apply(str);
+  const b = new WrappedOperation(h.randomOperation(strN), meta);
+  const ab = a.compose(b);
+  t.deepEqual(ab.meta.timesComposed, 1);
 });
 
-export function testTransformMethod (test) {
-  var str = 'Loorem ipsum';
-  var a = new WrappedOperation(
+test('WrappedOperation#transform', t => {
+  h.randomTest(n, () => {
+    const str = h.randomString(50);
+    const metaA = {};
+    const a = new WrappedOperation(h.randomOperation(str), metaA);
+    const metaB = {};
+    const b = new WrappedOperation(h.randomOperation(str), metaB);
+    const pair = WrappedOperation.transform(a, b);
+    const aPrime = pair[0];
+    const bPrime = pair[1];
+    t.deepEqual(aPrime.meta, metaA);
+    t.deepEqual(bPrime.meta, metaB);
+    t.deepEqual(aPrime.apply(b.apply(str)), bPrime.apply(a.apply(str)));
+  });
+});
+
+test('WrappedOperation#transform', t => {
+  const str = 'Loorem ipsum';
+  const a = new WrappedOperation(
     new TextOperation().retain(1)['delete'](1).retain(10),
     Selection.createCursor(1)
   );
-  var b = new WrappedOperation(
+  const b = new WrappedOperation(
     new TextOperation().retain(7)['delete'](1).insert("I").retain(4),
     Selection.createCursor(8)
   );
-  var pair = WrappedOperation.transform(a, b);
-  var aPrime = pair[0];
-  var bPrime = pair[1];
-  test.strictEqual("Lorem Ipsum", bPrime.apply(a.apply(str)));
-  test.ok(aPrime.meta.equals(Selection.createCursor(1)));
-  test.ok(bPrime.meta.equals(Selection.createCursor(7)));
-  test.done();
-}
+  const pair = WrappedOperation.transform(a, b);
+  const aPrime = pair[0];
+  const bPrime = pair[1];
+  t.deepEqual("Lorem Ipsum", bPrime.apply(a.apply(str)));
+  t.ok(aPrime.meta.equals(Selection.createCursor(1)));
+  t.ok(bPrime.meta.equals(Selection.createCursor(7)));
+})
