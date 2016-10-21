@@ -1,4 +1,4 @@
-# Operetta
+# Operetta [![Build Status](https://travis-ci.org/rike422/operetta.svg?branch=master)](https://travis-ci.org/rike422/operetta) [![Coverage Status](https://coveralls.io/repos/github/rike422/operetta/badge.svg?branch=master)](https://coveralls.io/github/rike422/operetta?branch=master)
 
 * Documentation: http://operational-transformation.github.io/
 * Compatibility: Requires CodeMirror >= 4.0
