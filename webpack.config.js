@@ -16,6 +16,7 @@ module.exports = {
     filename: 'ot.js'
   },
 
+  devtool: ['inline-source-map'],
   plugins: [
     //new webpack.optimize.DedupePlugin(),
     //new webpack.optimize.UglifyJsPlugin(),

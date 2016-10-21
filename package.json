@@ -2,7 +2,10 @@
   "name": "operetta",
   "description": "Collaborative editing using operational transformation",
   "version": "0.0.1",
-  "author": ["Akria Takahashi <rike422@gmail.com>", "Tim Baumann <tim@timbaumann.info> (http://timbaumann.info)"],
+  "author": [
+    "Akria Takahashi <rike422@gmail.com>",
+    "Tim Baumann <tim@timbaumann.info> (http://timbaumann.info)"
+  ],
   "ava": {
     "files": [
       "test/lib/**/*.js"
@@ -31,6 +34,7 @@
     "babel-preset-es2017": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
+    "coveralls": "^2.11.14",
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.1",
@@ -39,6 +43,7 @@
     "intelli-espower-loader": "^1.0.1",
     "jsdom": "^9.6.0",
     "mock-socket": "^5.0.1",
+    "nyc": "^8.3.2",
     "power-assert": "^1.4.1",
     "sinon": "^1.17.6",
     "snazzy": "^5.0.0",
@@ -76,8 +81,10 @@
     "prebuild": "npm run check && npm run clean",
     "prepublish": "npm run build",
     "prerelease": "npm run build",
+    "report": "nyc report --reporter=html",
     "standard": "standard 'lib/**/*.js' 'test/lib/**/*.js' --verbose | snazzy",
     "test": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA ava",
+    "test:ci": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA nyc ava",
     "test:watch": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA ava --watch"
   }
 }
