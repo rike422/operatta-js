@@ -1,5 +1,5 @@
 import h from '../helpers/test-helper';
-randomTestimport Selection from 'lib/selection'
+import Selection from 'lib/selection'
 const Range = Selection.Range;
 import TextOperation from 'lib/text-operation'
 
