@@ -34,20 +34,11 @@ test('Test Client', t => {
   }
 
   let doc = 'lorem dolor'
-  let appliedOperation = null
-
-  function getAppliedOperation () {
-    const a = appliedOperation
-    if (!a) {
-      throw new Error("applyOperation wasn't called")
-    }
-    appliedOperation = null
-    return a
-  }
+  // let appliedOperation = null
 
   client.applyOperation = operation => {
     doc = operation.apply(doc)
-    appliedOperation = operation
+    // appliedOperation = operation
   }
 
   function applyClient (operation) {

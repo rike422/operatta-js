@@ -1,4 +1,4 @@
-import h from '../helpers/test-helper'
+require('../helpers/test-helper')
 import Selection from 'lib/selection'
 const Range = Selection.Range
 import TextOperation from 'lib/text-operation'
