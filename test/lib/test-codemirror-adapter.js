@@ -27,11 +27,6 @@ function randomOperation (cm) {
   })
 }
 
-function getDocLength (doc) {
-  return doc.indexFromPos({ line: doc.lastLine(), ch: 0 }) +
-    doc.getLine(doc.lastLine()).length
-}
-
 test('converting between CodeMirror changes and operations', (t) => {
   const str = 'lorem ipsum'
 
