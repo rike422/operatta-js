@@ -10,6 +10,23 @@ global.WebSocket = require('mock-socket').WebSocket
 global.test = test
 global.describe = describe
 
+document.createRange = function() {
+  return {
+    selectNode () {},
+    setEnd () {
+    },
+    setStart () {
+    },
+    getBoundingClientRect () {
+      return { right: 0 };
+    },
+    getClientRects () {
+      return { right: 0 };
+    },
+    createContextualFragment (html) { return jsdom.jsdom(html); }
+  }
+}
+
 test.beforeEach(() => {
   global.sinon = sinon.sandbox.create()
 })
