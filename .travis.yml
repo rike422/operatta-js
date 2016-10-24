@@ -32,4 +32,8 @@ install:
   - yarn
 
 script:
-  - rake
+  - npm run test:ci
+  - npm run report
+
+after_success:
+    - './node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls'
