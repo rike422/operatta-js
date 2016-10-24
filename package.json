@@ -76,7 +76,7 @@
     "check": "npm run lint && npm run test",
     "clean": "rm -rf dist",
     "fixpack": "fixpack",
-    "flow": "flow check src",
+    "flow": "flow check lib",
     "lint": "npm run standard && npm run flow",
     "postinstall": "npm run fixpack",
     "prebuild": "npm run check && npm run clean",
