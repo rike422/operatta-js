@@ -36,6 +36,7 @@
     "babel-preset-stage-0": "^6.16.0",
     "coveralls": "^2.11.14",
     "eslint-config-standard": "^6.2.0",
+    "eslint-plugin-flowtype": "^2.21.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.1",
     "fixpack": "^2.3.1",
@@ -86,5 +87,24 @@
     "test": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA ava",
     "test:ci": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA nyc ava",
     "test:watch": "CONFIG=$(pwd)/webpack.config.js BABEL_DISABLE_CACHE=1 NODE_ENV=AVA ava --watch"
+  },
+  "standard": {
+    "ignore": [
+      "webpack*",
+      "dist/"
+    ],
+    "globals": [
+      "describe",
+      "test",
+      "sinon"
+    ],
+    "plugins": [
+      "flowtype"
+    ],
+    "rules": {
+      "flowtype/define-flow-type": 1,
+      "flowtype/use-flow-type": 1
+    },
+    "parser": "babel-eslint"
   }
 }
