@@ -1,6 +1,8 @@
 engines:
   eslint:
     enabled: true
+    config:
+      config: .eslintrc.yaml
   duplication:
     enabled: true
     config:
