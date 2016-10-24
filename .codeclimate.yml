@@ -1,4 +1,6 @@
 engines:
+  nodesecurity:
+    enabled: true
   eslint:
     enabled: true
     config:
