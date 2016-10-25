@@ -1,6 +1,6 @@
 /* global */
-import TextOperation from './text-operation'
-import Selection from './selection'
+import TextOperation from 'ot/text-operation'
+import Selection from 'editor/selection'
 
 class EventAdaptor {
   constructor (cm) {

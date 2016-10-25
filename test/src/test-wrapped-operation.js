@@ -1,7 +1,7 @@
-import WrappedOperation from 'src/wrapped-operation'
-import TextOperation from 'src/text-operation'
-import Selection from 'src/selection'
-import h from '../helpers/test-helper'
+import WrappedOperation from 'ot/wrapped-operation'
+import TextOperation from 'ot/text-operation'
+import Selection from 'editor/selection'
+import h from 'test/helpers/test-helper'
 
 const n = 20
 

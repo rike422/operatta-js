@@ -1,8 +1,8 @@
 
-import TextOperation from './text-operation'
-import WrappedOperation from './wrapped-operation'
+import TextOperation from 'ot/text-operation'
+import WrappedOperation from 'ot/wrapped-operation'
 import Server from './server'
-import Selection from './selection'
+import Selection from 'editor/selection'
 
 class EditorSocketIOServer extends Server {
   constructor (document, operations, docId, mayWrite) {

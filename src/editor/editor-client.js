@@ -1,8 +1,8 @@
-import Client from './client'
-import Selection from './selection'
-import UndoManager from './undo-manager'
-import TextOperation from './text-operation'
-import WrappedOperation from './wrapped-operation'
+import Client from 'editor/client'
+import Selection from 'editor/selection'
+import UndoManager from 'editor/undo-manager'
+import TextOperation from 'ot/text-operation'
+import WrappedOperation from 'ot/wrapped-operation'
 
 class SelfMeta {
   constructor (selectionBefore, selectionAfter) {
