@@ -1,8 +1,8 @@
 import h from 'test/helpers/test-helper'
-import Selection, { Range } from 'lib/selection'
-import CodeMirrorAdapter from 'lib/codemirror-adapter'
+import Selection, { Range } from 'src/selection'
+import CodeMirrorAdapter from 'src/codemirror-adapter'
 import CodeMirror from 'codemirror'
-import TextOperation from 'lib/text-operation'
+import TextOperation from 'src/text-operation'
 
 function randomEdit (cm) {
   const length = cm.getValue().length

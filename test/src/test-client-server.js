@@ -1,5 +1,5 @@
-import Client from 'lib/client'
-import Server from 'lib/server'
+import Client from 'src/client'
+import Server from 'src/server'
 import h from 'test/helpers/test-helper'
 
 class MyClient extends Client {

@@ -1,5 +1,5 @@
-import UndoManager from 'lib/undo-manager'
-import TextOperation from 'lib/text-operation'
+import UndoManager from 'src/undo-manager'
+import TextOperation from 'src/text-operation'
 import h from '../helpers/test-helper'
 
 class Editor {
