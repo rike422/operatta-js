@@ -48,12 +48,16 @@
     "source-map-support": "^0.4.3",
     "standard": "^8.3.0"
   },
+  "files": [
+    "lib",
+    "package.json"
+  ],
   "homepage": "http://operational-transformation.github.com",
   "keywords": [
-    "operational transformation",
-    "ot",
+    "babel",
     "flowtype",
-    "babel"
+    "operational transformation",
+    "ot"
   ],
   "license": "MIT",
   "licenses": [
@@ -67,10 +71,6 @@
     "type": "git",
     "url": "https://github.com/rike422/operetta-js"
   },
-  "files": [
-    "lib",
-    "package.json"
-  ],
   "scripts": {
     "build": "babel src -d lib",
     "check": "npm run lint && npm run test",
