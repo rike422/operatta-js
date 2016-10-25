@@ -50,7 +50,10 @@
   },
   "homepage": "http://operational-transformation.github.com",
   "keywords": [
-    "operational transformation"
+    "operational transformation",
+    "ot",
+    "flowtype",
+    "babel"
   ],
   "license": "MIT",
   "licenses": [
