@@ -2,10 +2,7 @@
   "name": "operetta-js",
   "description": "Collaborative editing using operational transformation",
   "version": "0.0.1",
-  "author": [
-    "Akria Takahashi <rike422@gmail.com>",
-    "Tim Baumann <tim@timbaumann.info> (http://timbaumann.info)"
-  ],
+  "author": "Akria Takahashi <rike422@gmail.com>",
   "ava": {
     "files": [
       "test/src/**/*.js"
