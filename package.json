@@ -64,6 +64,10 @@
     "type": "git",
     "url": "https://github.com/rike422/operetta-js"
   },
+  "files": [
+    "lib",
+    "package.json"
+  ],
   "scripts": {
     "build": "babel src -d lib",
     "check": "npm run lint && npm run test",
