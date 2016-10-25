@@ -1,4 +1,4 @@
-import SimpleTextOperation from 'lib/simple-text-operation'
+import SimpleTextOperation from 'src/simple-text-operation'
 import h from '../helpers/test-helper'
 
 const n = 500

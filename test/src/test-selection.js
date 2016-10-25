@@ -1,7 +1,7 @@
 require('../helpers/test-helper')
-import Selection from 'lib/selection'
+import Selection from 'src/selection'
 const Range = Selection.Range
-import TextOperation from 'lib/text-operation'
+import TextOperation from 'src/text-operation'
 
 test('Test Selection.testCreateCursor', t => {
   t.ok(Selection.createCursor(5).equals(new Selection([new Range(5, 5)])))

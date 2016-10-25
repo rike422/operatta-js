@@ -1,6 +1,6 @@
 import test, { describe } from 'ava-spec'
 import sinon from 'sinon'
-import TextOperation from 'lib/text-operation'
+import TextOperation from 'src/text-operation'
 
 global.assert = require('power-assert')
 global.document = require('jsdom').jsdom('<body></body>')
