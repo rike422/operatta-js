@@ -13,5 +13,4 @@ ratings:
   - lib/**/.js
 exclude_paths:
 - "node_modules/**"
-- "dist/**"
-- "test/phantomjs/**"
+- "lib/**"
