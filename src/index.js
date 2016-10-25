@@ -1,4 +1,3 @@
-export const version = '0.0.15'
 export const TextOperation = require('./text-operation')
 export const SimpleTextOperation = require('./simple-text-operation')
 export const Client = require('./client')
