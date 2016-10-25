@@ -1,5 +1,5 @@
-import SimpleTextOperation from 'src/simple-text-operation'
-import h from '../helpers/test-helper'
+import SimpleTextOperation from 'ot/simple-text-operation'
+import h from 'test/helpers/test-helper'
 
 const n = 500
 

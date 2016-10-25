@@ -1,4 +1,4 @@
-import TextOperation from './text-operation'
+import TextOperation from 'ot/text-operation'
 
 // Range has `anchor` and `head` properties, which are zero-based indices into
 // the document. The `anchor` is the side of the selection that stays fixed,

@@ -1,6 +1,6 @@
-import Client from 'src/client'
-import Server from 'src/server'
 import h from 'test/helpers/test-helper'
+import Client from 'editor/client'
+import Server from 'server/server'
 
 class MyClient extends Client {
   constructor (userId, document, revision, channel) {

@@ -1,6 +1,6 @@
-import UndoManager from 'src/undo-manager'
-import TextOperation from 'src/text-operation'
-import h from '../helpers/test-helper'
+import UndoManager from 'editor/undo-manager'
+import TextOperation from 'ot/text-operation'
+import h from 'test/helpers/test-helper'
 
 class Editor {
   constructor (doc) {

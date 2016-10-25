@@ -1,5 +1,5 @@
-import TextOperation from 'src/text-operation'
-import h from '../helpers/test-helper'
+import h from 'test/helpers/test-helper'
+import TextOperation from 'ot/text-operation'
 
 const n = 500
 
