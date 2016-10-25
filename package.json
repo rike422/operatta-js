@@ -1,5 +1,5 @@
 {
-  "name": "operetta",
+  "name": "operetta-js",
   "description": "Collaborative editing using operational transformation",
   "version": "0.0.1",
   "author": [
@@ -16,7 +16,7 @@
     "babel": "inherit"
   },
   "bugs": {
-    "url": "https://github.com/rike422/ot.js/issues"
+    "url": "https://github.com/rike422/operetta/issues"
   },
   "dependencies": {},
   "devDependencies": {
@@ -65,7 +65,7 @@
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rike422/ot.js"
+    "url": "https://github.com/rike422/operetta-js"
   },
   "scripts": {
     "build": "babel src -d lib",
