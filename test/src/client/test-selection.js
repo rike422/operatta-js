@@ -1,4 +1,4 @@
-require('../helpers/test-helper')
+require('../../helpers/test-helper')
 import Selection from 'client/selection'
 const Range = Selection.Range
 import TextOperation from 'ot/text-operation'
