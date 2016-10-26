@@ -16,11 +16,11 @@ export default class Connector {
   }
 
   onAck (fn) {
-    this.on("ack", fn)
+    this.on('ack', fn)
   }
 
   offAck (fn) {
-    this.off("ack", fn)
+    this.off('ack', fn)
   }
 
   onClientLeft (fn) {
