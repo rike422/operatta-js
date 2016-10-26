@@ -1,5 +1,5 @@
 require('../helpers/test-helper')
-import Selection from 'editor/selection'
+import Selection from 'client/selection'
 const Range = Selection.Range
 import TextOperation from 'ot/text-operation'
 

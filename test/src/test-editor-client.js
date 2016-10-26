@@ -1,8 +1,8 @@
 require('test/helpers/test-helper')
-import Selection, { Range } from 'editor/selection'
-import EditorClient from 'editor/editor-client'
+import Selection, { Range } from 'client/selection'
+import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
-import Client from 'editor/client'
+import Client from 'client/client'
 
 class EditorAdapterStub {
   constructor (value, selection) {

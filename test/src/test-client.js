@@ -1,6 +1,6 @@
 require('test/helpers/test-helper')
 import TextOperation from 'ot/text-operation'
-import Client from 'editor/client'
+import Client from 'client/client'
 
 test('Test Client', t => {
   const client = new Client(1)

@@ -1,6 +1,6 @@
-import Client from 'editor/client'
-import Selection from 'editor/selection'
-import UndoManager from 'editor/undo-manager'
+import Client from 'client/client'
+import Selection from 'client/selection'
+import UndoManager from 'client/undo-manager'
 import TextOperation from 'ot/text-operation'
 import WrappedOperation from 'ot/wrapped-operation'
 

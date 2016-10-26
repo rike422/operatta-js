@@ -1,4 +1,4 @@
-import UndoManager from 'editor/undo-manager'
+import UndoManager from 'client/undo-manager'
 import TextOperation from 'ot/text-operation'
 import h from 'test/helpers/test-helper'
 

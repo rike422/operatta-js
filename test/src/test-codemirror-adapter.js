@@ -1,7 +1,7 @@
 import h from 'test/helpers/test-helper'
 import CodeMirror from 'codemirror'
-import Selection, { Range } from 'editor/selection'
-import CodeMirrorAdapter from 'editor/adapters/codemirror-adapter'
+import Selection, { Range } from 'client/selection'
+import CodeMirrorAdapter from 'client/adapters/codemirror-adapter'
 import TextOperation from 'ot/text-operation'
 
 function randomEdit (cm) {

@@ -1,5 +1,5 @@
 import h from 'test/helpers/test-helper'
-import Client from 'editor/client'
+import Client from 'client/client'
 import Server from 'server/server'
 
 class MyClient extends Client {
