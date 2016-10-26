@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 export default class AjaxAdapter {
   constructor (path, ownUserName, revision) {
     if (path[path.length - 1] !== '/') {
@@ -24,6 +26,7 @@ export default class AjaxAdapter {
         this.trigger('operation', operations[i].operation)
       }
     }
+
     if (operations.length > 0) {
       this.majorRevision += operations.length
       this.minorRevision = 0
@@ -64,21 +67,19 @@ export default class AjaxAdapter {
   }
 
   poll () {
-    const self = this
-    $.ajax({
-      url: this.path + this.renderRevisionPath(),
-      type: 'GET',
-      dataType: 'json',
-      timeout: 5000,
-      success (data) {
-        self.handleResponse(data)
-        self.poll()
+    const url = this.path + this.renderRevisionPath()
+    fetch(url, {
+      headers: {
+        contentType: 'application/json'
       },
-      error () {
-        setTimeout(() => {
-          self.poll()
-        }, 500)
-      }
+      timeout: 5000
+    }).then((data) => {
+      this.handleResponse(data.json())
+      this.poll()
+    }).catch((e) => {
+      setTimeout(() => {
+        this.poll()
+      }, 500)
     })
   }
 
@@ -86,30 +87,29 @@ export default class AjaxAdapter {
     if (revision !== this.majorRevision) {
       throw new Error('Revision numbers out of sync')
     }
-    const self = this
-    $.ajax({
-      url: this.path + this.renderRevisionPath(),
-      type: 'POST',
-      data: JSON.stringify({ operation, selection }),
-      contentType: 'application/json',
-      processData: false,
-      success (data) {
-      },
-      error () {
-        setTimeout(() => {
-          self.sendOperation(revision, operation, selection)
-        }, 500)
+    const url = this.path + this.renderRevisionPath()
+
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ operation, selection }),
+      headers: {
+        contentType: 'application/json'
       }
+    }).catch((e) => {
+      setTimeout(() => {
+        this.sendOperation(revision, operation, selection)
+      }, 500)
     })
   }
 
   sendSelection (obj) {
-    $.ajax({
-      url: `${this.path + this.renderRevisionPath()}/selection`,
-      type: 'POST',
-      data: JSON.stringify(obj),
-      contentType: 'application/json',
-      processData: false,
+    const url = `${this.path + this.renderRevisionPath()}/selection`
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(obj),
+      headers: {
+        contentType: 'application/json'
+      },
       timeout: 1000
     })
   }
