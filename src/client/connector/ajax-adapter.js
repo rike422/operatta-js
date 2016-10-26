@@ -1,5 +1,3 @@
-/* global $ */
-
 export default class AjaxAdapter {
   constructor (path, ownUserName, revision) {
     if (path[path.length - 1] !== '/') {

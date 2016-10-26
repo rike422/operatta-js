@@ -1,4 +1,3 @@
-/* global */
 import TextOperation from 'ot/text-operation'
 import Selection from 'client/selection'
 
