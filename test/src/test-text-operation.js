@@ -71,10 +71,10 @@ test('Test TextOperation#Empty', (t) => {
 test('Test TextOperation#equals', (t) => {
   const op1 = new TextOperation()['delete'](1).insert('lo').retain(2).retain(3)
   const op2 = new TextOperation()['delete'](-1).insert('l').insert('o').retain(5)
-  t.ok(op1.equals(op2))
+  t.truthy(op1.equals(op2))
   op1['delete'](1)
   op2.retain(1)
-  t.ok(!op1.equals(op2))
+  t.truthy(!op1.equals(op2))
 })
 
 test('Test TextOperation merging', (t) => {
@@ -106,13 +106,13 @@ test('Test TextOperation merging', (t) => {
 
 test('Test TextOperation IsNoop', (t) => {
   const o = new TextOperation()
-  t.ok(o.isNoop())
+  t.truthy(o.isNoop())
   o.retain(5)
-  t.ok(o.isNoop())
+  t.truthy(o.isNoop())
   o.retain(3)
-  t.ok(o.isNoop())
+  t.truthy(o.isNoop())
   o.insert('lorem')
-  t.ok(!o.isNoop())
+  t.truthy(!o.isNoop())
 })
 
 test('Test TextOperation#toString', (t) => {
@@ -128,7 +128,7 @@ test('Test TextOperation#IdString', (t) => {
   h.randomTest(n, () => {
     const doc = h.randomString(50)
     const operation = h.randomOperation(doc)
-    t.ok(operation.equals(TextOperation.fromJSON(operation.toJSON())))
+    t.truthy(operation.equals(TextOperation.fromJSON(operation.toJSON())))
   })
 })
 
@@ -164,26 +164,26 @@ test('Test TextOperation should be compose with', (t) => {
 
   a = make().retain(3)
   b = make().retain(1).insert('tag').retain(2)
-  t.ok(a.shouldBeComposedWith(b))
-  t.ok(b.shouldBeComposedWith(a))
+  t.truthy(a.shouldBeComposedWith(b))
+  t.truthy(b.shouldBeComposedWith(a))
 
   a = make().retain(1).insert('a').retain(2)
   b = make().retain(2).insert('b').retain(2)
-  t.ok(a.shouldBeComposedWith(b))
+  t.truthy(a.shouldBeComposedWith(b))
   a['delete'](3)
-  t.ok(!a.shouldBeComposedWith(b))
+  t.truthy(!a.shouldBeComposedWith(b))
 
   a = make().retain(1).insert('b').retain(2)
   b = make().retain(1).insert('a').retain(3)
-  t.ok(!a.shouldBeComposedWith(b))
+  t.truthy(!a.shouldBeComposedWith(b))
 
   a = make().retain(4)['delete'](3).retain(10)
   b = make().retain(2)['delete'](2).retain(10)
-  t.ok(a.shouldBeComposedWith(b))
+  t.truthy(a.shouldBeComposedWith(b))
   b = make().retain(4)['delete'](7).retain(3)
-  t.ok(a.shouldBeComposedWith(b))
+  t.truthy(a.shouldBeComposedWith(b))
   b = make().retain(2)['delete'](9).retain(3)
-  t.ok(!a.shouldBeComposedWith(b))
+  t.truthy(!a.shouldBeComposedWith(b))
 })
 
 test('Test TextOperation should be compose with inverted', (t) => {
@@ -231,7 +231,7 @@ test('Test TextOperation#transfomr', (t) => {
     const baPrime = b.compose(aPrime)
     const afterAbPrime = abPrime.apply(str)
     const afterBaPrime = baPrime.apply(str)
-    t.ok(abPrime.equals(baPrime))
+    t.truthy(abPrime.equals(baPrime))
     t.deepEqual(afterAbPrime, afterBaPrime)
   })
 })

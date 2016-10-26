@@ -101,6 +101,6 @@ test('WrappedOperation#transform', t => {
   const aPrime = pair[0]
   const bPrime = pair[1]
   t.deepEqual('Lorem Ipsum', bPrime.apply(a.apply(str)))
-  t.ok(aPrime.meta.equals(Selection.createCursor(1)))
-  t.ok(bPrime.meta.equals(Selection.createCursor(7)))
+  t.truthy(aPrime.meta.equals(Selection.createCursor(1)))
+  t.truthy(bPrime.meta.equals(Selection.createCursor(7)))
 })

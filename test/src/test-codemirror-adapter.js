@@ -47,10 +47,10 @@ test('converting between CodeMirror changes and operations', (t) => {
       const v1 = cm1.getValue()
       const v2 = cm2.getValue()
       if (v1 !== v2) {
-        t.ok(false, 'the contents of both CodeMirror instances should be equal')
+        t.truthy(false, 'the contents of both CodeMirror instances should be equal')
         return
       }
-      t.ok(true, 'the contents of both CodeMirror instances should be equal')
+      t.truthy(true, 'the contents of both CodeMirror instances should be equal')
 
       if (n % 10 === 0) {
         setTimeout(step, 10) // give the browser a chance to repaint
@@ -93,7 +93,7 @@ test('getSelection and setSelection', (t) => {
   while (j--) {
     const selection = randomSelection(n)
     cmAdapter.setSelection(selection)
-    t.ok(selection.equals(cmAdapter.getSelection()))
+    t.truthy(selection.equals(cmAdapter.getSelection()))
   }
 })
 
@@ -110,16 +110,16 @@ test("should trigger the 'change' event when the user makes an edit", (t) => {
   })
   const edit1 = new TextOperation().retain(11).insert(' dolor')
   CodeMirrorAdapter.applyOperationToCodeMirror(edit1, cm)
-  t.ok(operations.shift().equals(edit1))
-  t.ok(inverses.shift().equals(edit1.invert('lorem ipsum')))
+  t.truthy(operations.shift().equals(edit1))
+  t.truthy(inverses.shift().equals(edit1.invert('lorem ipsum')))
 
   const edit2 = new TextOperation()['delete'](1).retain(16)
   CodeMirrorAdapter.applyOperationToCodeMirror(edit2, cm)
-  t.ok(operations.shift().equals(edit2))
-  t.ok(inverses.shift().equals(edit2.invert('lorem ipsum dolor')))
+  t.truthy(operations.shift().equals(edit2))
+  t.truthy(inverses.shift().equals(edit2.invert('lorem ipsum dolor')))
 
-  t.ok(operations.length === 0)
-  t.ok(inverses.length === 0)
+  t.truthy(operations.length === 0)
+  t.truthy(inverses.length === 0)
 })
 
 test("should trigger the 'selectionChange' event when the cursor position or selection changes", (t) => {
@@ -135,13 +135,13 @@ test("should trigger the 'selectionChange' event when the cursor position or sel
       change = true
     },
     selectionChange () {
-      t.ok(change)
+      t.truthy(change)
       selection = cm.listSelections()
     }
   })
 
   cm.replaceRange('e', { line: 0, ch: 1 }, { line: 0, ch: 1 })
-  t.ok(selection.length === 1)
+  t.truthy(selection.length === 1)
   t.deepEqual(selection[0].from(), new CodeMirror.Pos(0, 6), 'the cursor should be on position 6')
   t.deepEqual(selection[0].to(), new CodeMirror.Pos(0, 6), 'the cursor should be on position 6')
 
@@ -149,7 +149,7 @@ test("should trigger the 'selectionChange' event when the cursor position or sel
   const anchor = new CodeMirror.Pos(0, 12)
   const head = new CodeMirror.Pos(0, 6)
   cm.setSelection(anchor, head)
-  t.ok(selection.length === 1)
+  t.truthy(selection.length === 1)
   t.deepEqual(selection[0].from(), head, 'the selection should start on position 0')
   t.deepEqual(selection[0].to(), anchor, 'the selection should end on position 12')
 })
@@ -170,7 +170,7 @@ test("should trigger the 'blur' event when CodeMirror loses its focus", (t) => {
   textField.value = 'Dies ist ein Textfeld'
   document.body.appendChild(textField)
   textField.focus()
-  t.ok(blurred)
+  t.truthy(blurred)
   document.body.removeChild(textField)
 })
 
@@ -184,8 +184,8 @@ test('applyOperation should apply the operation to CodeMirror, but not trigger a
     }
   })
   cmAdapter.applyOperation(new TextOperation().retain(6).insert('nu'))
-  t.ok(cm.getValue() === cmAdapter.getValue())
-  t.ok(cmAdapter.getValue() === 'nanananu')
+  t.truthy(cm.getValue() === cmAdapter.getValue())
+  t.truthy(cmAdapter.getValue() === 'nanananu')
 })
 
 test('getValue', (t) => {
@@ -193,9 +193,9 @@ test('getValue', (t) => {
   const cm = CodeMirror(document.body, { value: doc })
   const cmAdapter = new CodeMirrorAdapter(cm)
   CodeMirrorAdapter.applyOperationToCodeMirror(new TextOperation()['delete'](1).insert('G').retain(8), cm)
-  t.ok(cmAdapter.getValue() === 'Guten tag')
+  t.truthy(cmAdapter.getValue() === 'Guten tag')
   cmAdapter.applyOperation(new TextOperation().retain(6)['delete'](1).insert('T').retain(2))
-  t.ok(cmAdapter.getValue() === 'Guten Tag')
+  t.truthy(cmAdapter.getValue() === 'Guten Tag')
 })
 
 test('register undo/redo', (t) => {
@@ -205,8 +205,8 @@ test('register undo/redo', (t) => {
   const redoFn = () => 'redo!'
   cmAdapter.registerUndo(undoFn)
   cmAdapter.registerRedo(redoFn)
-  t.ok(cm.undo === undoFn)
-  t.ok(cm.redo === redoFn)
+  t.truthy(cm.undo === undoFn)
+  t.truthy(cm.redo === redoFn)
 })
 
 test('detach', (t) => {
@@ -219,10 +219,10 @@ test('detach', (t) => {
     }
   })
   cm.setValue('42')
-  t.ok(changes === 1)
+  t.truthy(changes === 1)
   cmAdapter.detach()
   cm.setValue('23')
-  t.ok(changes === 1)
+  t.truthy(changes === 1)
 })
 
 test('setOtherSelection', (t) => {

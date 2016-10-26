@@ -124,8 +124,8 @@ function setup () {
 
 test('register undo and redo functions', (t) => {
   setup()
-  t.ok(typeof editorAdapter.undo === 'function')
-  t.ok(typeof editorAdapter.redo === 'function')
+  t.truthy(typeof editorAdapter.undo === 'function')
+  t.truthy(typeof editorAdapter.redo === 'function')
 })
 
 test('simulated editing session', (t) => {
@@ -135,7 +135,7 @@ test('simulated editing session', (t) => {
   // Firstly, we get informed one of them has replaced the lower case 'd' with a capital 'D'
   serverAdapter.trigger('operation', [6, -1, 'D', 4])
   t.deepEqual(editorAdapter.getValue(), 'lorem Dolor')
-  t.ok(editorClient.state instanceof Client.Synchronized)
+  t.truthy(editorClient.state instanceof Client.Synchronized)
   t.deepEqual(editorClient.revision, 2)
 
   // We append a single white space to the document
@@ -146,24 +146,24 @@ test('simulated editing session', (t) => {
     new TextOperation().retain(11)['delete'](1)
   )
   editorAdapter.trigger('selectionChange')
-  t.ok(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
   t.deepEqual(serverAdapter.sentRevision, 2)
-  t.ok(editorClient.state.outstanding.equals(new TextOperation().retain(11).insert(' ')))
+  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(11).insert(' ')))
   t.deepEqual(serverAdapter.sentOperation, [11, ' '])
-  t.ok(serverAdapter.sentSelectionWithOperation.equals(Selection.createCursor(12)))
+  t.truthy(serverAdapter.sentSelectionWithOperation.equals(Selection.createCursor(12)))
   t.deepEqual(serverAdapter.sentSelection, null)
 
   // Someone inserts an extra white space between "lorem" and "Dolor"
   serverAdapter.trigger('operation', [5, ' ', 6])
   t.deepEqual(editorAdapter.getValue(), 'lorem  Dolor ')
   t.deepEqual(editorClient.revision, 3)
-  t.ok(editorClient.state instanceof Client.AwaitingConfirm)
-  t.ok(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
+  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
 
   // Our cursor moved one char to the right because of that insertion. That
   // info should have been sent.
-  t.ok(editorAdapter.selection.equals(Selection.createCursor(13)))
-  t.ok(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
+  t.truthy(editorAdapter.selection.equals(Selection.createCursor(13)))
+  t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
 
   // We append "S" at the end
   editorAdapter.value = 'lorem  Dolor S'
@@ -174,10 +174,10 @@ test('simulated editing session', (t) => {
   )
   editorAdapter.trigger('selectionChange')
   // This operation should have been buffered
-  t.ok(editorClient.state instanceof Client.AwaitingWithBuffer)
+  t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
   t.deepEqual(serverAdapter.sentRevision, 2) // last revision
   t.deepEqual(serverAdapter.sentOperation, [11, ' ']) // last operation
-  t.ok(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
+  t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
 
   // We continue with the letters "it"
   editorAdapter.value = 'lorem  Dolor Sit'
@@ -193,29 +193,29 @@ test('simulated editing session', (t) => {
     new TextOperation().retain(15)['delete'](1)
   )
   editorAdapter.trigger('selectionChange')
-  t.ok(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
+  t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
   t.deepEqual(serverAdapter.sentRevision, 2) // last revision
   t.deepEqual(serverAdapter.sentOperation, [11, ' ']) // last operation
-  t.ok(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
-  t.ok(editorClient.state.buffer.equals(new TextOperation().retain(13).insert('Sit')))
+  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
+  t.truthy(editorClient.state.buffer.equals(new TextOperation().retain(13).insert('Sit')))
 
   // Someone inserts "Ipsum" between "lorem" and "Dolor"
   serverAdapter.trigger('operation', [6, 'Ipsum', 6])
   t.deepEqual(editorClient.revision, 4)
   t.deepEqual(editorAdapter.getValue(), 'lorem Ipsum Dolor Sit')
-  t.ok(editorClient.state instanceof Client.AwaitingWithBuffer)
-  t.ok(editorClient.state.outstanding.equals(new TextOperation().retain(17).insert(' ')))
-  t.ok(editorClient.state.buffer.equals(new TextOperation().retain(18).insert('Sit')))
+  t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
+  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(17).insert(' ')))
+  t.truthy(editorClient.state.buffer.equals(new TextOperation().retain(18).insert('Sit')))
   // Our cursor should have been shifted by that operation to position 21
-  t.ok(editorAdapter.selection.equals(Selection.createCursor(21)))
+  t.truthy(editorAdapter.selection.equals(Selection.createCursor(21)))
 
   // We get an acknowledgement for our first sent operation from the server!
   serverAdapter.trigger('ack')
   t.deepEqual(serverAdapter.sentRevision, 5)
   t.deepEqual(serverAdapter.sentOperation, [18, 'Sit'])
   t.deepEqual(editorClient.revision, 5)
-  t.ok(editorClient.state instanceof Client.AwaitingConfirm)
-  t.ok(editorClient.state.outstanding.equals(new TextOperation().retain(18).insert('Sit')))
+  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(18).insert('Sit')))
 
   // We switch to another program. The browser window and the editor lose their
   // focus.
@@ -226,7 +226,7 @@ test('simulated editing session', (t) => {
   serverAdapter.trigger('ack')
   t.deepEqual(editorClient.revision, 6)
   t.deepEqual(serverAdapter.sentRevision, 5)
-  t.ok(editorClient.state instanceof Client.Synchronized)
+  t.truthy(editorClient.state instanceof Client.Synchronized)
   t.deepEqual(editorAdapter.getValue(), 'lorem Ipsum Dolor Sit')
 })
 
@@ -295,7 +295,7 @@ test('user handling', (t) => {
   t.deepEqual(editorClient.clientListEl.childNodes.length, 2)
   serverAdapter.trigger('client_left', 'enihcam')
   t.deepEqual(editorClient.clientListEl.childNodes.length, 1)
-  t.ok(!firstLi.parentNode)
+  t.truthy(!firstLi.parentNode)
   t.deepEqual(secondLi.parentNode, editorClient.clientListEl)
 
   // A new user joins!
@@ -341,10 +341,10 @@ test('undo/redo', (t) => {
 
   editorClient.undo()
   t.deepEqual(editorAdapter.getValue(), 'lorem  dolor')
-  t.ok(editorAdapter.getSelection().equals(new Selection([new Range(7, 12)])))
+  t.truthy(editorAdapter.getSelection().equals(new Selection([new Range(7, 12)])))
 
   editorClient.redo()
   t.deepEqual(editorAdapter.getValue(), 'lorem  s')
-  t.ok(editorAdapter.getSelection().equals(Selection.createCursor(8)))
+  t.truthy(editorAdapter.getSelection().equals(Selection.createCursor(8)))
 })
 
