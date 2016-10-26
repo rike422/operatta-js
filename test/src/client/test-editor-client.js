@@ -2,6 +2,7 @@ require('test/helpers/test-helper')
 import Selection, { Range } from 'client/selection'
 import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
+import Connector from 'client/connector/connector'
 import Client from 'client/client'
 
 class EditorAdapterStub {
@@ -84,8 +85,9 @@ class EditorAdapterStub {
   }
 }
 
-class ServerAdapterStub {
+class ServerConnectorStub extends Connector {
   constructor () {
+    super()
     this.sentOperation = this.sentSelection = null
   }
 
@@ -99,9 +101,6 @@ class ServerAdapterStub {
     this.sentSelection = selection
   }
 }
-
-ServerAdapterStub.prototype.registerCallbacks = EditorAdapterStub.prototype.registerCallbacks
-ServerAdapterStub.prototype.trigger = EditorAdapterStub.prototype.trigger
 
 let revision
 let initialDoc
@@ -117,7 +116,7 @@ function setup () {
     'enihcam': { name: 'Tim', selection: { ranges: [{ anchor: 0, head: 0 }, { anchor: 2, head: 4 }] } },
     'baia': { name: 'Jan', selection: { ranges: [{ anchor: 6, head: 7 }] } }
   }
-  serverAdapter = new ServerAdapterStub()
+  serverAdapter = new ServerConnectorStub()
   editorAdapter = new EditorAdapterStub(initialDoc, Selection.createCursor(11))
   editorClient = new EditorClient(revision, clients, serverAdapter, editorAdapter)
 }

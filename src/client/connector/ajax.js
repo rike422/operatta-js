@@ -1,7 +1,9 @@
 import fetch from 'node-fetch'
+import Connector from './connector'
 
-export default class AjaxAdapter {
+export default class AjaxAdapter extends Connector {
   constructor (path, ownUserName, revision) {
+    super()
     if (path[path.length - 1] !== '/') {
       path += '/'
     }
@@ -116,14 +118,6 @@ export default class AjaxAdapter {
 
   registerCallbacks (cb) {
     this.callbacks = cb
-  }
-
-  trigger (event) {
-    const args = Array.prototype.slice.call(arguments, 1)
-    const action = this.callbacks && this.callbacks[event]
-    if (action) {
-      action.apply(this, args)
-    }
   }
 }
 

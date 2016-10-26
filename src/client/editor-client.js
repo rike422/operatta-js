@@ -141,60 +141,13 @@ export default class EditorClient extends Client {
     this.editorAdapter.registerRedo(() => {
       self.redo()
     })
-
-    this.serverAdapter.registerCallbacks({
-      client_left (clientId) {
-        self.onClientLeft(clientId)
-      },
-      set_name (clientId, name) {
-        self.getClientObject(clientId).setName(name)
-      },
-      ack () {
-        self.serverAck()
-      },
-      operation (operation) {
-        self.applyServer(TextOperation.fromJSON(operation))
-      },
-      selection (clientId, selection) {
-        if (selection) {
-          self.getClientObject(clientId).updateSelection(
-            self.transformSelection(Selection.fromJSON(selection))
-          )
-        } else {
-          self.getClientObject(clientId).removeSelection()
-        }
-      },
-      clients (clients) {
-        let clientId
-        for (clientId in self.clients) {
-          if (self.clients.hasOwnProperty(clientId) && !clients.hasOwnProperty(clientId)) {
-            self.onClientLeft(clientId)
-          }
-        }
-
-        for (clientId in clients) {
-          if (clients.hasOwnProperty(clientId)) {
-            const clientObject = self.getClientObject(clientId)
-
-            if (clients[clientId].name) {
-              clientObject.setName(clients[clientId].name)
-            }
-
-            const selection = clients[clientId].selection
-            if (selection) {
-              self.clients[clientId].updateSelection(
-                self.transformSelection(Selection.fromJSON(selection))
-              )
-            } else {
-              self.clients[clientId].removeSelection()
-            }
-          }
-        }
-      },
-      reconnect () {
-        self.serverReconnect()
-      }
-    })
+    this.serverAdapter.onAck(this.serverAck.bind(this))
+    this.serverAdapter.onClientLeft(this.onClientLeft.bind(this))
+    this.serverAdapter.onSetName(this.onSetName.bind(this))
+    this.serverAdapter.onOperation(this.onRecieveOperation.bind(this))
+    this.serverAdapter.onSelection(this.onOtherClientSelectionChange.bind(this))
+    this.serverAdapter.onClients(this.onUpdateClients.bind(this))
+    this.serverAdapter.onReconnect(this.onReconnect.bind(this))
   }
 
   addClient (clientId, clientObj) {
@@ -253,22 +206,20 @@ export default class EditorClient extends Client {
   }
 
   undo () {
-    const self = this
     if (!this.undoManager.canUndo()) {
       return void 0
     }
     this.undoManager.performUndo(o => {
-      self.applyUnredo(o)
+      this.applyUnredo(o)
     })
   }
 
   redo () {
-    const self = this
     if (!this.undoManager.canRedo()) {
       return
     }
     this.undoManager.performRedo(o => {
-      self.applyUnredo(o)
+      this.applyUnredo(o)
     })
   }
 
@@ -282,8 +233,54 @@ export default class EditorClient extends Client {
     this.applyClient(textOperation)
   }
 
+  onSetName (clientId, name) {
+    this.getClientObject(clientId).setName(name)
+  }
+
+  onRecieveOperation (operation) {
+    this.applyServer(TextOperation.fromJSON(operation))
+  }
+
   updateSelection () {
     this.selection = this.editorAdapter.getSelection()
+  }
+
+  onUpdateClients (clients) {
+    let clientId
+    for (clientId in this.clients) {
+      if (this.clients.hasOwnProperty(clientId) && !clients.hasOwnProperty(clientId)) {
+        this.onClientLeft(clientId)
+      }
+    }
+
+    for (clientId in clients) {
+      if (clients.hasOwnProperty(clientId)) {
+        const clientObject = this.getClientObject(clientId)
+
+        if (clients[clientId].name) {
+          clientObject.setName(clients[clientId].name)
+        }
+
+        const selection = clients[clientId].selection
+        if (selection) {
+          this.clients[clientId].updateSelection(
+            this.transformSelection(Selection.fromJSON(selection))
+          )
+        } else {
+          this.clients[clientId].removeSelection()
+        }
+      }
+    }
+  }
+
+  onOtherClientSelectionChange (clientId, selection) {
+    if (selection) {
+      this.getClientObject(clientId).updateSelection(
+        this.transformSelection(Selection.fromJSON(selection))
+      )
+    } else {
+      this.getClientObject(clientId).removeSelection()
+    }
   }
 
   onSelectionChange () {
@@ -295,6 +292,9 @@ export default class EditorClient extends Client {
     this.sendSelection(this.selection)
   }
 
+  onReconnect () {
+    this.serverReconnect()
+  }
   onBlur () {
     this.selection = null
     this.sendSelection(null)
