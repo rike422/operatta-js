@@ -17,7 +17,7 @@ export default class Eventable {
 
   trigger (type, ...args) {
     const callBacks = this.callbacks && this.callbacks[type]
-    if (callBacks == undefined) {
+    if (callBacks === undefined) {
       return
     }
     callBacks.forEach(cb => cb(...args))

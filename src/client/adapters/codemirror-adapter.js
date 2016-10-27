@@ -25,7 +25,7 @@ class EventAdaptor {
   }
 }
 
-export default class CodeMirrorAdapter extends EditorAdapter{
+export default class CodeMirrorAdapter extends EditorAdapter {
   constructor (cm) {
     super()
     this.cm = cm
@@ -271,9 +271,9 @@ CodeMirrorAdapter.operationFromCodeMirrorChanges = (changes, doc) => {
           ch = pos.ch - change.to.ch + last(change.text).length
         }
         return indexFromPos({
-            line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
-            ch: ch
-          }) + sumLengths(change.removed) - sumLengths(change.text)
+          line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
+          ch: ch
+        }) + sumLengths(change.removed) - sumLengths(change.text)
       }
       if (change.from.line === pos.line) {
         return indexFromPos(change.from) + pos.ch - change.from.ch

@@ -205,7 +205,10 @@ test('detach', (t) => {
   const cm = CodeMirror(document.body, {})
   const cmAdapter = new CodeMirrorAdapter(cm)
   let changes = 0
-  cmAdapter.onChange(() => changes += 1)
+  cmAdapter.onChange(() => {
+    changes += 1
+    return
+  })
   cm.setValue('42')
   t.truthy(changes === 1)
   cmAdapter.detach()
