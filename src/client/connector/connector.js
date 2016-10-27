@@ -1,19 +1,6 @@
-export default class Connector {
+import Eventable from 'common/eventable'
 
-  constructor () {
-    this.callbacks = {}
-  }
-
-  on (type, fn) {
-    const callBacks = this.callbacks[type] || []
-    callBacks.push(fn)
-    this.callbacks[type] = callBacks
-  }
-
-  off (type, fn) {
-    const callBacks = this.callbacks[type] || []
-    this.callbacks[type] = callBacks.filter(_fn => fn === _fn)
-  }
+export default class Connector extends Eventable {
 
   onAck (fn) {
     this.on('ack', fn)
@@ -47,8 +34,4 @@ export default class Connector {
     this.on('reconnect', fn)
   }
 
-  trigger (type, ...args) {
-    const callBacks = this.callbacks && this.callbacks[type]
-    callBacks.forEach(cb => cb(...args))
-  }
 }

@@ -102,11 +102,9 @@ test("should trigger the 'change' event when the user makes an edit", (t) => {
   const cmAdapter = new CodeMirrorAdapter(cm)
   const operations = []
   const inverses = []
-  cmAdapter.registerCallbacks({
-    change (operation, inverse) {
-      operations.push(operation)
-      inverses.push(inverse)
-    }
+  cmAdapter.onChange((operation, inverse) => {
+    operations.push(operation)
+    inverses.push(inverse)
   })
   const edit1 = new TextOperation().retain(11).insert(' dolor')
   CodeMirrorAdapter.applyOperationToCodeMirror(edit1, cm)
@@ -130,14 +128,12 @@ test("should trigger the 'selectionChange' event when the cursor position or sel
 
   let change = false
   let selection = null
-  cmAdapter.registerCallbacks({
-    change () {
-      change = true
-    },
-    selectionChange () {
-      t.truthy(change)
-      selection = cm.listSelections()
-    }
+  cmAdapter.onChange(() => {
+    change = true
+  })
+  cmAdapter.onSelectionChange(() => {
+    t.truthy(change)
+    selection = cm.listSelections()
   })
 
   cm.replaceRange('e', { line: 0, ch: 1 }, { line: 0, ch: 1 })
@@ -159,10 +155,8 @@ test("should trigger the 'blur' event when CodeMirror loses its focus", (t) => {
   cm.focus()
   const cmAdapter = new CodeMirrorAdapter(cm)
   let blurred = false
-  cmAdapter.registerCallbacks({
-    blur () {
-      blurred = true
-    }
+  cmAdapter.onBlur(() => {
+    blurred = true
   })
 
   const textField = document.createElement('input')
@@ -178,10 +172,8 @@ test('applyOperation should apply the operation to CodeMirror, but not trigger a
   const doc = 'nanana'
   const cm = CodeMirror(document.body, { value: doc })
   const cmAdapter = new CodeMirrorAdapter(cm)
-  cmAdapter.registerCallbacks({
-    change () {
-      throw new Error("change shouldn't be called!")
-    }
+  cmAdapter.onChange(() => {
+    throw new Error("change shouldn't be called!")
   })
   cmAdapter.applyOperation(new TextOperation().retain(6).insert('nu'))
   t.truthy(cm.getValue() === cmAdapter.getValue())
@@ -213,11 +205,7 @@ test('detach', (t) => {
   const cm = CodeMirror(document.body, {})
   const cmAdapter = new CodeMirrorAdapter(cm)
   let changes = 0
-  cmAdapter.registerCallbacks({
-    change () {
-      changes += 1
-    }
-  })
+  cmAdapter.onChange(() => changes += 1)
   cm.setValue('42')
   t.truthy(changes === 1)
   cmAdapter.detach()

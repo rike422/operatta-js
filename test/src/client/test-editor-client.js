@@ -1,12 +1,14 @@
 require('test/helpers/test-helper')
 import Selection, { Range } from 'client/selection'
+import EditorAdapter from 'client/adapters/adapter'
 import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
 import Connector from 'client/connector/connector'
 import Client from 'client/client'
 
-class EditorAdapterStub {
+class EditorAdapterStub extends EditorAdapter {
   constructor (value, selection) {
+    super()
     this.value = value
     this.selection = selection
     this.undo = this.redo = null
@@ -24,14 +26,6 @@ class EditorAdapterStub {
 
   registerRedo (redo) {
     this.redo = redo
-  }
-
-  trigger (event) {
-    const args = Array.prototype.slice.call(arguments, 1)
-    const action = this.callbacks && this.callbacks[event]
-    if (action) {
-      action.apply(this, args)
-    }
   }
 
   getValue () {

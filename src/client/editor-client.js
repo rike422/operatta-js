@@ -38,18 +38,10 @@ export default class EditorClient extends Client {
     this.initializeClients(clients)
 
     const self = this
+    this.editorAdapter.onChange(this.onChange.bind(this))
+    this.editorAdapter.onSelectionChange(this.onSelectionChange.bind(this))
+    this.editorAdapter.onBlur(this.onBlur.bind(this))
 
-    this.editorAdapter.registerCallbacks({
-      change (operation, inverse) {
-        self.onChange(operation, inverse)
-      },
-      selectionChange () {
-        self.onSelectionChange()
-      },
-      blur () {
-        self.onBlur()
-      }
-    })
     this.editorAdapter.registerUndo(() => {
       self.undo()
     })
