@@ -3,7 +3,7 @@ export default class State {
     this.client = client
   }
 
-  transition(state, ...args) {
-    this.client.setState(new state(this.client, ...args))
+  transition (State, ...args) {
+    this.client.setState(new State(this.client, ...args))
   }
 }

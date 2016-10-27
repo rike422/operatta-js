@@ -4,9 +4,6 @@ import AwaitingConfirm from './awaiting-confirm'
 // In the 'Synchronized' state, there is no pending operation that the client
 // has sent to the server.
 export default class Synchronized extends State {
-  constructor (client) {
-    super(client)
-  }
 
   applyServer (operation) {
     // When we receive a new operation from the server, the operation can be
