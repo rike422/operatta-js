@@ -1,5 +1,6 @@
 import TextOperation from 'ot/text-operation'
 import Selection from 'client/selection'
+import EditorAdapter from './adapter'
 
 class EventAdaptor {
   constructor (cm) {
@@ -24,56 +25,25 @@ class EventAdaptor {
   }
 }
 
-export default class CodeMirrorAdapter {
+export default class CodeMirrorAdapter extends EditorAdapter {
   constructor (cm) {
+    super()
     this.cm = cm
     this.ignoreNextChange = false
     this.changeInProgress = false
     this.selectionChanged = false
     const events = new EventAdaptor(cm)
-    events.on('changes', this.onChanges.bind(this))
-    events.on('change', this.onChange.bind(this))
-    events.on('cursorActivity', this.onCursorActivity.bind(this))
-    events.on('focus', this.onFocus.bind(this))
-    events.on('blur', this.onBlur.bind(this))
+    events.on('changes', this._onChanges.bind(this))
+    events.on('change', this._onChange.bind(this))
+    events.on('cursorActivity', this._onFocus.bind(this))
+    events.on('focus', this._onFocus.bind(this))
+    events.on('blur', this._onBlur.bind(this))
     this.events = events
   }
 
   // Removes all event listeners from the CodeMirror instance.
   detach () {
     this.events.detach()
-  }
-
-  registerCallbacks (cb) {
-    this.callbacks = cb
-  }
-
-  onChange () {
-    // By default, CodeMirror's event order is the following:
-    // 1. 'change', 2. 'cursorActivity', 3. 'changes'.
-    // We want to fire the 'selectionChange' event after the 'change' event,
-    // but need the information from the 'changes' event. Therefore, we detect
-    // when a change is in progress by listening to the change event, setting
-    // a flag that makes this adapter defer all 'cursorActivity' events.
-    this.changeInProgress = true
-  }
-
-  onChanges (_, changes) {
-    if (!this.ignoreNextChange) {
-      const pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
-      this.trigger('change', pair[0], pair[1])
-    }
-    if (this.selectionChanged) {
-      this.trigger('selectionChange')
-    }
-    this.changeInProgress = false
-    this.ignoreNextChange = false
-  }
-
-  onBlur () {
-    if (!this.cm.somethingSelected()) {
-      this.trigger('blur')
-    }
   }
 
   getValue () {
@@ -162,14 +132,6 @@ export default class CodeMirrorAdapter {
     }
   }
 
-  trigger (event) {
-    const args = Array.prototype.slice.call(arguments, 1)
-    const action = this.callbacks && this.callbacks[event]
-    if (action) {
-      action.apply(this, args)
-    }
-  }
-
   applyOperation (operation) {
     this.ignoreNextChange = true
     CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
@@ -181,6 +143,42 @@ export default class CodeMirrorAdapter {
 
   registerRedo (redoFn) {
     this.cm.redo = redoFn
+  }
+
+  _onBlur () {
+    if (!this.cm.somethingSelected()) {
+      this.trigger('blur')
+    }
+  }
+
+  _onFocus () {
+    if (this.changeInProgress) {
+      this.selectionChanged = true
+    } else {
+      this.trigger('selectionChange')
+    }
+  }
+
+  _onChange () {
+    // By default, CodeMirror's event order is the following:
+    // 1. 'change', 2. 'cursorActivity', 3. 'changes'.
+    // We want to fire the 'selectionChange' event after the 'change' event,
+    // but need the information from the 'changes' event. Therefore, we detect
+    // when a change is in progress by listening to the change event, setting
+    // a flag that makes this adapter defer all 'cursorActivity' events.
+    this.changeInProgress = true
+  }
+
+  _onChanges (_, changes) {
+    if (!this.ignoreNextChange) {
+      const pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
+      this.trigger('change', pair[0], pair[1])
+    }
+    if (this.selectionChanged) {
+      this.trigger('selectionChange')
+    }
+    this.changeInProgress = false
+    this.ignoreNextChange = false
   }
 }
 
@@ -335,15 +333,6 @@ CodeMirrorAdapter.applyOperationToCodeMirror = (operation, cm) => {
     }
   })
 }
-
-CodeMirrorAdapter.prototype.onCursorActivity =
-  CodeMirrorAdapter.prototype.onFocus = function () {
-    if (this.changeInProgress) {
-      this.selectionChanged = true
-    } else {
-      this.trigger('selectionChange')
-    }
-  }
 
 var addStyleRule = ((() => {
   const added = {}

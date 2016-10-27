@@ -1,27 +1,27 @@
-export default class SocketIOAdapter {
+import Connector from './connector'
+export default class SocketIO extends Connector {
   constructor (socket) {
+    super()
     this.socket = socket
-
-    const self = this
     socket
       .on('client_left', clientId => {
-        self.trigger('client_left', clientId)
+        this.trigger('client_left', clientId)
       })
       .on('set_name', (clientId, name) => {
-        self.trigger('set_name', clientId, name)
+        this.trigger('set_name', clientId, name)
       })
       .on('ack', () => {
-        self.trigger('ack')
+        this.trigger('ack')
       })
       .on('operation', (clientId, operation, selection) => {
-        self.trigger('operation', operation)
-        self.trigger('selection', clientId, selection)
+        this.trigger('operation', operation)
+        this.trigger('selection', clientId, selection)
       })
       .on('selection', (clientId, selection) => {
-        self.trigger('selection', clientId, selection)
+        this.trigger('selection', clientId, selection)
       })
       .on('reconnect', () => {
-        self.trigger('reconnect')
+        this.trigger('reconnect')
       })
   }
 
@@ -35,13 +35,5 @@ export default class SocketIOAdapter {
 
   registerCallbacks (cb) {
     this.callbacks = cb
-  }
-
-  trigger (event) {
-    const args = Array.prototype.slice.call(arguments, 1)
-    const action = this.callbacks && this.callbacks[event]
-    if (action) {
-      action.apply(this, args)
-    }
   }
 }

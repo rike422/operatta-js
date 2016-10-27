@@ -1,8 +1,17 @@
 // translation of https://github.com/djspiewak/cccp/blob/master/agent/src/main/scala/com/codecommit/cccp/agent/state.scala
+import AwaitingConfirm from './status/awaiting-confirm'
+import AwaitingWithBuffer from './status/awaiting-with-buffer'
+import Synchronized from './status/synchronized'
+
 export default class Client {
+
+  static AwaitingConfirm = AwaitingConfirm
+  static AwaitingWithBuffer = AwaitingWithBuffer
+  static Synchronized = Synchronized
+
   constructor (revision) {
     this.revision = revision // the next expected revision number
-    this.state = synchronized_ // start state
+    this.state = new Synchronized(this) // start state
   }
 
   setState (state) {
@@ -11,24 +20,34 @@ export default class Client {
 
   // Call this method when the user changes the document.
   applyClient (operation) {
-    this.setState(this.state.applyClient(this, operation))
+    this.state.applyClient(operation)
   }
 
   // Call this method with a new operation from the server
   applyServer (operation) {
     this.revision++
-    this.setState(this.state.applyServer(this, operation))
+    this.state.applyServer(operation)
   }
 
   serverAck () {
     this.revision++
-    this.setState(this.state.serverAck(this))
+    this.state.serverAck()
   }
 
   serverReconnect () {
     if (typeof this.state.resend === 'function') {
-      this.state.resend(this)
+      this.state.resend()
     }
+  }
+
+  // Override this method.
+  applyOperation (operation) {
+    throw new Error('applyOperation must be defined in child class')
+  }
+
+  // Override this method.
+  sendOperation (revision, operation) {
+    throw new Error('sendOperation must be defined in child class')
   }
 
   // Transforms a selection from the latest known server state to the current
@@ -41,150 +60,3 @@ export default class Client {
     return this.state.transformSelection(selection)
   }
 }
-
-// Override this method.
-Client.prototype.sendOperation = (revision, operation) => {
-  throw new Error('sendOperation must be defined in child class')
-}
-
-// Override this method.
-Client.prototype.applyOperation = operation => {
-  throw new Error('applyOperation must be defined in child class')
-}
-
-// In the 'Synchronized' state, there is no pending operation that the client
-// has sent to the server.
-class Synchronized {
-  applyServer (client, operation) {
-    // When we receive a new operation from the server, the operation can be
-    // simply applied to the current document
-    client.applyOperation(operation)
-    return this
-  }
-}
-
-Client.Synchronized = Synchronized
-
-Synchronized.prototype.applyClient = (client, operation) => {
-  // When the user makes an edit, send the operation to the server and
-  // switch to the 'AwaitingConfirm' state
-  client.sendOperation(client.revision, operation)
-  return new AwaitingConfirm(operation)
-}
-
-Synchronized.prototype.serverAck = client => {
-  throw new Error('There is no pending operation.')
-}
-
-// Nothing to do because the latest server state and client state are the same.
-Synchronized.prototype.transformSelection = x => x
-
-// Singleton
-var synchronized_ = new Synchronized()
-
-// In the 'AwaitingConfirm' state, there's one operation the client has sent
-// to the server and is still waiting for an acknowledgement.
-class AwaitingConfirm {
-  constructor (outstanding) {
-    // Save the pending operation
-    this.outstanding = outstanding
-  }
-
-  applyClient (client, operation) {
-    // When the user makes an edit, don't send the operation immediately,
-    // instead switch to 'AwaitingWithBuffer' state
-    return new AwaitingWithBuffer(this.outstanding, operation)
-  }
-
-  applyServer (client, operation) {
-    // This is another client's operation. Visualization:
-    //
-    //                   /\
-    // this.outstanding /  \ operation
-    //                 /    \
-    //                 \    /
-    //  pair[1]         \  / pair[0] (new outstanding)
-    //  (can be applied  \/
-    //  to the client's
-    //  current document)
-    const pair = operation.constructor.transform(this.outstanding, operation)
-    client.applyOperation(pair[1])
-    return new AwaitingConfirm(pair[0])
-  }
-
-  transformSelection (selection) {
-    return selection.transform(this.outstanding)
-  }
-
-  resend (client) {
-    // The confirm didn't come because the client was disconnected.
-    // Now that it has reconnected, we resend the outstanding operation.
-    client.sendOperation(client.revision, this.outstanding)
-  }
-}
-
-Client.AwaitingConfirm = AwaitingConfirm
-
-AwaitingConfirm.prototype.serverAck = client => // The client's operation has been acknowledged
-  // => switch to synchronized state
-  synchronized_
-
-// In the 'AwaitingWithBuffer' state, the client is waiting for an operation
-// to be acknowledged by the server while buffering the edits the user makes
-class AwaitingWithBuffer {
-  constructor (outstanding, buffer) {
-    // Save the pending operation and the user's edits since then
-    this.outstanding = outstanding
-    this.buffer = buffer
-  }
-
-  applyClient (client, operation) {
-    // Compose the user's changes onto the buffer
-    const newBuffer = this.buffer.compose(operation)
-    return new AwaitingWithBuffer(this.outstanding, newBuffer)
-  }
-
-  applyServer (client, operation) {
-    // Operation comes from another client
-    //
-    //                       /\
-    //     this.outstanding /  \ operation
-    //                     /    \
-    //                    /\    /
-    //       this.buffer /  \* / pair1[0] (new outstanding)
-    //                  /    \/
-    //                  \    /
-    //          pair2[1] \  / pair2[0] (new buffer)
-    // the transformed    \/
-    // operation -- can
-    // be applied to the
-    // client's current
-    // document
-    //
-    // * pair1[1]
-    const transform = operation.constructor.transform
-    const pair1 = transform(this.outstanding, operation)
-    const pair2 = transform(this.buffer, pair1[1])
-    client.applyOperation(pair2[1])
-    return new AwaitingWithBuffer(pair1[0], pair2[0])
-  }
-
-  serverAck (client) {
-    // The pending operation has been acknowledged
-    // => send buffer
-    client.sendOperation(client.revision, this.buffer)
-    return new AwaitingConfirm(this.buffer)
-  }
-
-  transformSelection (selection) {
-    return selection.transform(this.outstanding).transform(this.buffer)
-  }
-
-  resend (client) {
-    // The confirm didn't come because the client was disconnected.
-    // Now that it has reconnected, we resend the outstanding operation.
-    client.sendOperation(client.revision, this.outstanding)
-  }
-}
-
-Client.AwaitingWithBuffer = AwaitingWithBuffer
