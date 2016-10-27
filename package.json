@@ -18,7 +18,8 @@
     "url": "https://github.com/rike422/operetta/issues"
   },
   "dependencies": {
-    "node-fetch": "^1.6.3"
+    "node-fetch": "^1.6.3",
+    "socket.io": "1.5.1"
   },
   "devDependencies": {
     "ava": "avajs/ava#master",
@@ -50,7 +51,6 @@
     "power-assert": "^1.4.1",
     "sinon": "^1.17.6",
     "snazzy": "^5.0.0",
-    "socket.io": "1.2.1",
     "source-map-support": "^0.4.3",
     "standard": "^8.3.0"
   },
