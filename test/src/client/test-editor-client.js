@@ -95,49 +95,58 @@ class ServerConnectorStub extends Connector {
     this.sentSelection = selection
   }
 }
+let _t
 
-let revision
-let initialDoc
-let clients
-let serverAdapter
-let editorAdapter
-let editorClient
-
-function setup () {
-  revision = 1
-  initialDoc = 'lorem dolor'
-  clients = {
+test.beforeEach(t => {
+  t.context.revision = 1
+  t.context.initialDoc = 'lorem dolor'
+  t.context.clients = {
     'enihcam': { name: 'Tim', selection: { ranges: [{ anchor: 0, head: 0 }, { anchor: 2, head: 4 }] } },
     'baia': { name: 'Jan', selection: { ranges: [{ anchor: 6, head: 7 }] } }
   }
-  serverAdapter = new ServerConnectorStub()
-  editorAdapter = new EditorAdapterStub(initialDoc, Selection.createCursor(11))
-  editorClient = new EditorClient(revision, clients, serverAdapter, editorAdapter)
+  t.context.serverAdapter = new ServerConnectorStub()
+  t.context.editorAdapter = new EditorAdapterStub(t.context.initialDoc, Selection.createCursor(11))
+  t.context.editorClient = new EditorClient(t.context.revision, t.context.clients, t.context.serverAdapter, t.context.editorAdapter)
+  _t = t
+})
+
+const setSelection = (str) => {
+  _t.context.editorAdapter.value = str
+  _t.context.editorAdapter.selection = Selection.createCursor(str.length)
+}
+
+const insertAndDelete = (str, retain = _t.context.editorAdapter.getValue().length - 1) => {
+  _t.context.editorAdapter.trigger('change',
+    new TextOperation().retain(retain).insert(str),
+    new TextOperation().retain(retain).delete(str.length)
+  )
 }
 
 test('register undo and redo functions', (t) => {
-  setup()
+  const editorAdapter = t.context.editorAdapter
   t.truthy(typeof editorAdapter.undo === 'function')
   t.truthy(typeof editorAdapter.redo === 'function')
 })
 
 test('simulated editing session', (t) => {
-  setup()
   // Let's say, we are Nina and we're editing a document together with Tim and Jan
 
   // Firstly, we get informed one of them has replaced the lower case 'd' with a capital 'D'
+
+  const serverAdapter = t.context.serverAdapter
+  const editorAdapter = t.context.editorAdapter
+  const editorClient = t.context.editorClient
+
   serverAdapter.trigger('operation', [6, -1, 'D', 4])
+
   t.deepEqual(editorAdapter.getValue(), 'lorem Dolor')
   t.truthy(editorClient.state instanceof Client.Synchronized)
   t.deepEqual(editorClient.revision, 2)
 
   // We append a single white space to the document
-  editorAdapter.value = 'lorem Dolor '
-  editorAdapter.selection = Selection.createCursor(12)
-  editorAdapter.trigger('change',
-    new TextOperation().retain(11).insert(' '),
-    new TextOperation().retain(11)['delete'](1)
-  )
+  setSelection('lorem Dolor ')
+  insertAndDelete(' ')
+
   editorAdapter.trigger('selectionChange')
   t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
   t.deepEqual(serverAdapter.sentRevision, 2)
@@ -159,12 +168,9 @@ test('simulated editing session', (t) => {
   t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
 
   // We append "S" at the end
-  editorAdapter.value = 'lorem  Dolor S'
-  editorAdapter.selection = Selection.createCursor(14)
-  editorAdapter.trigger('change',
-    new TextOperation().retain(13).insert('S'),
-    new TextOperation().retain(13)['delete'](1)
-  )
+  setSelection('lorem  Dolor S')
+  insertAndDelete('S')
+
   editorAdapter.trigger('selectionChange')
   // This operation should have been buffered
   t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
@@ -173,19 +179,13 @@ test('simulated editing session', (t) => {
   t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
 
   // We continue with the letters "it"
-  editorAdapter.value = 'lorem  Dolor Sit'
-  editorAdapter.selection = Selection.createCursor(15)
-  editorAdapter.trigger('change',
-    new TextOperation().retain(14).insert('i'),
-    new TextOperation().retain(14)['delete'](1)
-  )
+  setSelection('lorem  Dolor Sit')
+  insertAndDelete('i', 14)
   editorAdapter.selection = Selection.createCursor(16)
   editorAdapter.trigger('selectionChange')
-  editorAdapter.trigger('change',
-    new TextOperation().retain(15).insert('t'),
-    new TextOperation().retain(15)['delete'](1)
-  )
+  insertAndDelete('t', 15)
   editorAdapter.trigger('selectionChange')
+
   t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
   t.deepEqual(serverAdapter.sentRevision, 2) // last revision
   t.deepEqual(serverAdapter.sentOperation, [11, ' ']) // last operation
@@ -224,11 +224,14 @@ test('simulated editing session', (t) => {
 })
 
 test('user handling', (t) => {
-  setup()
+  const editorClient = t.context.editorClient
+  const clientListEl = editorClient.clientListEl
+  const editorAdapter = t.context.editorAdapter
+  const serverAdapter = t.context.serverAdapter
 
-  t.deepEqual(editorClient.clientListEl.childNodes.length, 2)
-  const firstLi = editorClient.clientListEl.childNodes[0]
-  const secondLi = editorClient.clientListEl.childNodes[1]
+  t.deepEqual(clientListEl.childNodes.length, 2)
+  const firstLi = clientListEl.childNodes[0]
+  const secondLi = clientListEl.childNodes[1]
   t.deepEqual(firstLi.tagName.toLowerCase(), 'li')
   t.deepEqual(firstLi.innerHTML, 'Tim')
   t.deepEqual(secondLi.tagName.toLowerCase(), 'li')
@@ -249,8 +252,8 @@ test('user handling', (t) => {
   ])
 
   // We insert an extra space between "lorem" and "dolor"
-  editorAdapter.value = 'lorem  dolor'
-  editorAdapter.selection = Selection.createCursor(6)
+  setSelection('lorem  dolor')
+
   editorAdapter.trigger('change',
     new TextOperation().retain(5).insert(' ').retain(6),
     new TextOperation().retain(5)['delete'](1).retain(6)
@@ -285,16 +288,16 @@ test('user handling', (t) => {
   ])
 
   // Tim closes his browser
-  t.deepEqual(editorClient.clientListEl.childNodes.length, 2)
+  t.deepEqual(clientListEl.childNodes.length, 2)
   serverAdapter.trigger('client_left', 'enihcam')
-  t.deepEqual(editorClient.clientListEl.childNodes.length, 1)
+  t.deepEqual(clientListEl.childNodes.length, 1)
   t.truthy(!firstLi.parentNode)
-  t.deepEqual(secondLi.parentNode, editorClient.clientListEl)
+  t.deepEqual(secondLi.parentNode, clientListEl)
 
   // A new user joins!
   serverAdapter.trigger('set_name', 'emit-remmus', 'Nina')
-  t.deepEqual(editorClient.clientListEl.childNodes.length, 2)
-  t.deepEqual(editorClient.clientListEl.childNodes[1].innerHTML, 'Nina')
+  t.deepEqual(clientListEl.childNodes.length, 2)
+  t.deepEqual(clientListEl.childNodes[1].innerHTML, 'Nina')
 
   // We get an update consisting of the state of all connected users:
   // Tim rejoined, Jan left, Nina updated her cursor
@@ -302,9 +305,9 @@ test('user handling', (t) => {
     'enihcam': { name: 'Tim', selection: null },
     'emit-remmus': { name: 'Nina', selection: { ranges: [{ anchor: 0, head: 0 }] } }
   })
-  t.deepEqual(editorClient.clientListEl.childNodes.length, 2)
-  t.deepEqual(editorClient.clientListEl.childNodes[0].innerHTML, 'Nina')
-  t.deepEqual(editorClient.clientListEl.childNodes[1].innerHTML, 'Tim')
+  t.deepEqual(clientListEl.childNodes.length, 2)
+  t.deepEqual(clientListEl.childNodes[0].innerHTML, 'Nina')
+  t.deepEqual(clientListEl.childNodes[1].innerHTML, 'Tim')
   t.deepEqual(editorAdapter.otherSelections, [
     {
       clientId: 'emit-remmus',
@@ -316,12 +319,14 @@ test('user handling', (t) => {
 })
 
 test('undo/redo', (t) => {
-  setup()
+  const editorAdapter = t.context.editorAdapter
+  const serverAdapter = t.context.serverAdapter
+  const editorClient = t.context.editorClient
+
   editorAdapter.selection = new Selection([new Range(6, 11)])
   editorAdapter.trigger('selectionChange')
 
-  editorAdapter.value = 'lorem s'
-  editorAdapter.selection = Selection.createCursor(7)
+  setSelection('lorem s')
   editorAdapter.trigger('change',
     new TextOperation().retain(6)['delete'](5).insert('s'),
     new TextOperation().retain(6)['delete'](1).insert('dolor')
