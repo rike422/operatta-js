@@ -95,6 +95,7 @@ class ServerConnectorStub extends Connector {
     this.sentSelection = selection
   }
 }
+
 let _t
 
 test.beforeEach(t => {
@@ -137,6 +138,14 @@ test('simulated editing session', (t) => {
   const editorAdapter = t.context.editorAdapter
   const editorClient = t.context.editorClient
 
+  const assertOutstanding = (ratain, str) => {
+    t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(ratain).insert(str)))
+  }
+
+  const assertBuffer = (ratain, str) => {
+    t.truthy(editorClient.state.buffer.equals(new TextOperation().retain(ratain).insert(str)))
+  }
+
   serverAdapter.trigger('operation', [6, -1, 'D', 4])
 
   t.deepEqual(editorAdapter.getValue(), 'lorem Dolor')
@@ -150,7 +159,8 @@ test('simulated editing session', (t) => {
   editorAdapter.trigger('selectionChange')
   t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
   t.deepEqual(serverAdapter.sentRevision, 2)
-  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(11).insert(' ')))
+
+  assertOutstanding(11, ' ')
   t.deepEqual(serverAdapter.sentOperation, [11, ' '])
   t.truthy(serverAdapter.sentSelectionWithOperation.equals(Selection.createCursor(12)))
   t.deepEqual(serverAdapter.sentSelection, null)
@@ -160,7 +170,7 @@ test('simulated editing session', (t) => {
   t.deepEqual(editorAdapter.getValue(), 'lorem  Dolor ')
   t.deepEqual(editorClient.revision, 3)
   t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
-  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
+  assertOutstanding(12, ' ')
 
   // Our cursor moved one char to the right because of that insertion. That
   // info should have been sent.
@@ -189,16 +199,16 @@ test('simulated editing session', (t) => {
   t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
   t.deepEqual(serverAdapter.sentRevision, 2) // last revision
   t.deepEqual(serverAdapter.sentOperation, [11, ' ']) // last operation
-  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
-  t.truthy(editorClient.state.buffer.equals(new TextOperation().retain(13).insert('Sit')))
+  assertOutstanding(12, ' ')
+  assertBuffer(13, 'Sit')
 
   // Someone inserts "Ipsum" between "lorem" and "Dolor"
   serverAdapter.trigger('operation', [6, 'Ipsum', 6])
   t.deepEqual(editorClient.revision, 4)
   t.deepEqual(editorAdapter.getValue(), 'lorem Ipsum Dolor Sit')
   t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
-  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(17).insert(' ')))
-  t.truthy(editorClient.state.buffer.equals(new TextOperation().retain(18).insert('Sit')))
+  assertOutstanding(17, ' ')
+  assertBuffer(18, 'Sit')
   // Our cursor should have been shifted by that operation to position 21
   t.truthy(editorAdapter.selection.equals(Selection.createCursor(21)))
 
@@ -208,7 +218,7 @@ test('simulated editing session', (t) => {
   t.deepEqual(serverAdapter.sentOperation, [18, 'Sit'])
   t.deepEqual(editorClient.revision, 5)
   t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
-  t.truthy(editorClient.state.outstanding.equals(new TextOperation().retain(18).insert('Sit')))
+  assertOutstanding(18, 'Sit')
 
   // We switch to another program. The browser window and the editor lose their
   // focus.
@@ -237,18 +247,18 @@ test('user handling', (t) => {
   t.deepEqual(secondLi.tagName.toLowerCase(), 'li')
   t.deepEqual(secondLi.innerHTML, 'Jan')
   t.notDeepEqual(firstLi.style.color, secondLi.style.color)
-
+  const mockClient1 = {
+    clientId: 'enihcam',
+    color: editorAdapter.otherSelections[0].color,
+    selection: new Selection([new Range(0, 0), new Range(2, 4)])
+  }
+  const mockClient2 = {
+    clientId: 'baia',
+    color: editorAdapter.otherSelections[1].color,
+    selection: new Selection([new Range(6, 7)])
+  }
   t.deepEqual(editorAdapter.otherSelections, [
-    {
-      clientId: 'enihcam',
-      color: editorAdapter.otherSelections[0].color,
-      selection: new Selection([new Range(0, 0), new Range(2, 4)])
-    },
-    {
-      clientId: 'baia',
-      color: editorAdapter.otherSelections[1].color,
-      selection: new Selection([new Range(6, 7)])
-    }
+    mockClient1, mockClient2
   ])
 
   // We insert an extra space between "lorem" and "dolor"
@@ -262,18 +272,10 @@ test('user handling', (t) => {
 
   // Jan selects some text that spans the position of our insertion
   serverAdapter.trigger('selection', 'baia', { ranges: [{ anchor: 4, head: 7 }] })
+  mockClient2.selection = new Selection([new Range(4, 8)])
   t.deepEqual(editorAdapter.otherSelections, [
-    {
-      clientId: 'enihcam',
-      color: editorAdapter.otherSelections[0].color,
-      selection: new Selection([new Range(0, 0), new Range(2, 4)])
-    },
-    {
-      clientId: 'baia',
-      color: editorAdapter.otherSelections[1].color,
-      // because of our insertion, the selection spans one more character
-      selection: new Selection([new Range(4, 8)])
-    }
+    mockClient1,
+    mockClient2
   ])
 
   // Tim's editor loses focus

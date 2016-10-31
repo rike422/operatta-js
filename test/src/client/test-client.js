@@ -49,6 +49,14 @@ test('Test Client', t => {
     applyClient(new TextOperation().retain(doc.length).insert(str))
   }
 
+  const assertOutstanding = (ratain, str) => {
+    t.truthy(client.state.outstanding.equals(new TextOperation().retain(ratain).insert(str)))
+  }
+
+  const assertBuffer = (ratain, str) => {
+    t.truthy(client.state.buffer.equals(new TextOperation().retain(ratain).insert(str)))
+  }
+
   client.applyServer(new TextOperation().retain(6)['delete'](1).insert('D').retain(4))
   t.deepEqual(doc, 'lorem Dolor')
   t.truthy(client.state instanceof Client.Synchronized)
@@ -66,7 +74,7 @@ test('Test Client', t => {
   t.deepEqual(doc, 'lorem  Dolor ')
   t.deepEqual(client.revision, 3)
   t.truthy(client.state instanceof Client.AwaitingConfirm)
-  t.truthy(client.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
+  assertOutstanding(12, ' ')
 
   insertOperation('S')
   t.truthy(client.state instanceof Client.AwaitingWithBuffer)
@@ -74,22 +82,22 @@ test('Test Client', t => {
   insertOperation('t')
   t.truthy(!sentRevision && !sentOperation)
   t.deepEqual(doc, 'lorem  Dolor Sit')
-  t.truthy(client.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
-  t.truthy(client.state.buffer.equals(new TextOperation().retain(13).insert('Sit')))
+  assertOutstanding(12, ' ')
+  assertBuffer(13, 'Sit')
 
   client.applyServer(new TextOperation().retain(6).insert('Ipsum').retain(6))
   t.deepEqual(client.revision, 4)
   t.deepEqual(doc, 'lorem Ipsum Dolor Sit')
   t.truthy(client.state instanceof Client.AwaitingWithBuffer)
-  t.truthy(client.state.outstanding.equals(new TextOperation().retain(17).insert(' ')))
-  t.truthy(client.state.buffer.equals(new TextOperation().retain(18).insert('Sit')))
+  assertOutstanding(17, ' ')
+  assertBuffer(18, 'Sit')
 
   client.serverAck()
   t.deepEqual(getSentRevision(), 5)
   t.truthy(getSentOperation().equals(new TextOperation().retain(18).insert('Sit')))
   t.deepEqual(client.revision, 5)
   t.truthy(client.state instanceof Client.AwaitingConfirm)
-  t.truthy(client.state.outstanding.equals(new TextOperation().retain(18).insert('Sit')))
+  assertOutstanding(18, 'Sit')
 
   client.serverAck()
   t.deepEqual(client.revision, 6)

@@ -204,6 +204,7 @@ export default class TextOperation {
         op1 = ops1[i1++]
         continue
       }
+
       if (isInsert(op2)) {
         operation.insert(op2)
         op2 = ops2[i2++]
@@ -455,6 +456,7 @@ TextOperation.transform = (operation1, operation2) => {
       op1 = ops1[i1++]
       continue
     }
+
     if (isInsert(op2)) {
       operation1prime.retain(op2.length)
       operation2prime.insert(op2)

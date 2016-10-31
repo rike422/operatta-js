@@ -33,8 +33,7 @@ test.beforeEach(() => {
 
 test.afterEach(() => {
   global.sinon.restore()
-}
-)
+})
 
 export default {
   triggerEvent  (el, event) {
