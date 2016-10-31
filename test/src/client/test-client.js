@@ -45,18 +45,22 @@ test('Test Client', t => {
     doc = operation.apply(doc)
     client.applyClient(operation)
   }
+  function insertOperation (str) {
+    applyClient(new TextOperation().retain(doc.length).insert(str))
+  }
 
   client.applyServer(new TextOperation().retain(6)['delete'](1).insert('D').retain(4))
   t.deepEqual(doc, 'lorem Dolor')
   t.truthy(client.state instanceof Client.Synchronized)
   t.deepEqual(client.revision, 2)
 
-  applyClient(new TextOperation().retain(11).insert(' '))
+  const spaceInsert = new TextOperation().retain(11).insert(' ')
+  applyClient(spaceInsert)
   t.deepEqual(doc, 'lorem Dolor ')
   t.truthy(client.state instanceof Client.AwaitingConfirm)
   t.deepEqual(getSentRevision(), 2)
-  t.truthy(client.state.outstanding.equals(new TextOperation().retain(11).insert(' ')))
-  t.truthy(getSentOperation().equals(new TextOperation().retain(11).insert(' ')))
+  t.truthy(client.state.outstanding.equals(spaceInsert))
+  t.truthy(getSentOperation().equals(spaceInsert))
 
   client.applyServer(new TextOperation().retain(5).insert(' ').retain(6))
   t.deepEqual(doc, 'lorem  Dolor ')
@@ -64,10 +68,10 @@ test('Test Client', t => {
   t.truthy(client.state instanceof Client.AwaitingConfirm)
   t.truthy(client.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
 
-  applyClient(new TextOperation().retain(13).insert('S'))
+  insertOperation('S')
   t.truthy(client.state instanceof Client.AwaitingWithBuffer)
-  applyClient(new TextOperation().retain(14).insert('i'))
-  applyClient(new TextOperation().retain(15).insert('t'))
+  insertOperation('i')
+  insertOperation('t')
   t.truthy(!sentRevision && !sentOperation)
   t.deepEqual(doc, 'lorem  Dolor Sit')
   t.truthy(client.state.outstanding.equals(new TextOperation().retain(12).insert(' ')))
