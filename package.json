@@ -1,5 +1,5 @@
 {
-  "name": "operetta-js",
+  "name": "operatta-js",
   "description": "Collaborative editing using operational transformation",
   "version": "0.0.1",
   "author": "Akria Takahashi <rike422@gmail.com>",
@@ -15,7 +15,7 @@
     "babel": "inherit"
   },
   "bugs": {
-    "url": "https://github.com/rike422/operetta/issues"
+    "url": "https://github.com/rike422/operatta/issues"
   },
   "dependencies": {
     "node-fetch": "^1.6.3",
@@ -69,13 +69,13 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/github.com/rike422/operetta/raw/master/LICENSE"
+      "url": "https://github.com/github.com/rike422/operatta/raw/master/LICENSE"
     }
   ],
   "main": "./lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rike422/operetta-js"
+    "url": "https://github.com/rike422/operatta-js"
   },
   "scripts": {
     "build": "babel src -d lib",
