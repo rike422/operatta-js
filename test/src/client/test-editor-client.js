@@ -1,100 +1,10 @@
 require('test/helpers/test-helper')
 import Selection, { Range } from 'client/selection'
-import EditorAdapter from 'client/adapters/adapter'
+import EditorAdapterMock from 'test/helpers/mocks/editor-adapter-mock'
+import ServerConnectorMock from 'test/helpers/mocks/server-connector-mock'
 import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
-import Connector from 'client/connector/connector'
 import Client from 'client/client'
-
-class EditorAdapterStub extends EditorAdapter {
-  constructor (value, selection) {
-    super()
-    this.value = value
-    this.selection = selection
-    this.undo = this.redo = null
-    this.lastAppliedOperation = null
-    this.otherSelections = []
-  }
-
-  registerCallbacks (cb) {
-    this.callbacks = cb
-  }
-
-  registerUndo (undo) {
-    this.undo = undo
-  }
-
-  registerRedo (redo) {
-    this.redo = redo
-  }
-
-  getValue () {
-    return this.value
-  }
-
-  getSelection () {
-    return this.selection
-  }
-
-  setSelection (selection) {
-    this.selection = selection
-    this.trigger('selectionChange')
-  }
-
-  blur () {
-    this.selection = null
-    this.trigger('blur')
-  }
-
-  setOtherSelection (selection, color, clientId) {
-    const otherSelections = this.otherSelections
-    let cleared = false
-    const selectionObj = {
-      selection,
-      color,
-      clientId
-    }
-    otherSelections.push(selectionObj)
-    return {
-      clear () {
-        if (cleared) {
-          throw new Error('already cleared!')
-        }
-        cleared = true
-        otherSelections.splice(otherSelections.indexOf(selectionObj), 1)
-      }
-    }
-  }
-
-  applyOperation (operation) {
-    this.lastAppliedOperation = operation
-    this.value = operation.apply(this.value)
-    if (this.selection) {
-      const newSelection = this.selection.transform(operation)
-      if (!this.selection.equals(newSelection)) {
-        this.selection = newSelection
-        this.trigger('selectionChange')
-      }
-    }
-  }
-}
-
-class ServerConnectorStub extends Connector {
-  constructor () {
-    super()
-    this.sentOperation = this.sentSelection = null
-  }
-
-  sendOperation (revision, operation, selection) {
-    this.sentRevision = revision
-    this.sentOperation = operation
-    this.sentSelectionWithOperation = selection
-  }
-
-  sendSelection (selection) {
-    this.sentSelection = selection
-  }
-}
 
 let _t
 
@@ -105,8 +15,8 @@ test.beforeEach(t => {
     'enihcam': { name: 'Tim', selection: { ranges: [{ anchor: 0, head: 0 }, { anchor: 2, head: 4 }] } },
     'baia': { name: 'Jan', selection: { ranges: [{ anchor: 6, head: 7 }] } }
   }
-  t.context.serverAdapter = new ServerConnectorStub()
-  t.context.editorAdapter = new EditorAdapterStub(t.context.initialDoc, Selection.createCursor(11))
+  t.context.serverAdapter = new ServerConnectorMock()
+  t.context.editorAdapter = new EditorAdapterMock(t.context.initialDoc, Selection.createCursor(11))
   t.context.editorClient = new EditorClient(t.context.revision, t.context.clients, t.context.serverAdapter, t.context.editorAdapter)
   _t = t
 })
@@ -318,33 +228,5 @@ test('user handling', (t) => {
       selection: Selection.createCursor(0)
     }
   ])
-})
-
-test('undo/redo', (t) => {
-  const editorAdapter = t.context.editorAdapter
-  const serverAdapter = t.context.serverAdapter
-  const editorClient = t.context.editorClient
-
-  editorAdapter.selection = new Selection([new Range(6, 11)])
-  editorAdapter.trigger('selectionChange')
-
-  setSelection('lorem s')
-  editorAdapter.trigger('change',
-    new TextOperation().retain(6)['delete'](5).insert('s'),
-    new TextOperation().retain(6)['delete'](1).insert('dolor')
-  )
-  editorAdapter.trigger('selectionChange')
-
-  // Someone inserts an extra white space between "lorem" and "dolor"
-  serverAdapter.trigger('operation', [5, ' ', 6])
-  t.deepEqual(editorAdapter.getValue(), 'lorem  s')
-
-  editorClient.undo()
-  t.deepEqual(editorAdapter.getValue(), 'lorem  dolor')
-  t.truthy(editorAdapter.getSelection().equals(new Selection([new Range(7, 12)])))
-
-  editorClient.redo()
-  t.deepEqual(editorAdapter.getValue(), 'lorem  s')
-  t.truthy(editorAdapter.getSelection().equals(Selection.createCursor(8)))
 })
 
