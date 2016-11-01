@@ -14,7 +14,7 @@ class Editor {
     }
 
     const compose = !dontCompose && this.undoManager.undoStack.length > 0 &&
-                  last(this.undoManager.undoStack).invert(this.doc).shouldBeComposedWith(operation)
+      last(this.undoManager.undoStack).invert(this.doc).shouldBeComposedWith(operation)
     this.undoManager.add(operation.invert(this.doc), compose)
     this.doc = operation.apply(this.doc)
   }
@@ -28,22 +28,22 @@ class Editor {
 test('Test UndoManager', (t) => {
   const editor = new Editor('Looremipsum')
   const undoManager = editor.undoManager
-  editor.undo = () => {
-    t.truthy(!undoManager.isUndoing())
-    undoManager.performUndo(operation => {
-      t.truthy(undoManager.isUndoing())
-      editor.doEdit(operation)
-    })
-    t.truthy(!undoManager.isUndoing())
+
+  const doing = (name) => {
+    const confirmMethod = undoManager[`is${name}doing`].bind(undoManager)
+    const performMethod = undoManager[`perform${name}do`].bind(undoManager)
+    return function () {
+      t.truthy(!confirmMethod())
+      performMethod(operation => {
+        t.truthy(confirmMethod())
+        editor.doEdit(operation)
+      })
+      t.truthy(!confirmMethod())
+    }
   }
-  editor.redo = () => {
-    t.truthy(!undoManager.isRedoing())
-    undoManager.performRedo(operation => {
-      t.truthy(undoManager.isRedoing())
-      editor.doEdit(operation)
-    })
-    t.truthy(!undoManager.isRedoing())
-  }
+
+  editor.undo = doing('Un')
+  editor.redo = doing('Re')
 
   t.truthy(!undoManager.canUndo())
   t.truthy(!undoManager.canRedo())
