@@ -127,25 +127,23 @@ export default class TextOperation {
       throw new Error("The operation's base length must be equal to the string's length.")
     }
     const newStr = []
-    let j = 0
     let strIndex = 0
     const ops = this.ops
-    for (let i = 0, l = ops.length; i < l; i++) {
-      const op = ops[i]
+    ops.forEach((op) => {
       if (isRetain(op)) {
         if (strIndex + op > str.length) {
           throw new Error("Operation can't retain more characters than are left in the string.")
         }
         // Copy skipped part of the old string.
-        newStr[j++] = str.slice(strIndex, strIndex + op)
+        newStr.push(str.slice(strIndex, strIndex + op))
         strIndex += op
       } else if (isInsert(op)) {
         // Insert string.
-        newStr[j++] = op
+        newStr.push(op)
       } else { // delete op
         strIndex -= op
       }
-    }
+    })
     if (strIndex !== str.length) {
       throw new Error("The operation didn't operate on the whole string.")
     }
@@ -160,8 +158,7 @@ export default class TextOperation {
     let strIndex = 0
     const inverse = new TextOperation()
     const ops = this.ops
-    for (let i = 0, l = ops.length; i < l; i++) {
-      const op = ops[i]
+    ops.forEach((op) => {
       if (isRetain(op)) {
         inverse.retain(op)
         strIndex += op
@@ -171,7 +168,7 @@ export default class TextOperation {
         inverse.insert(str.slice(strIndex, strIndex - op))
         strIndex -= op
       }
-    }
+    })
     return inverse
   }
 

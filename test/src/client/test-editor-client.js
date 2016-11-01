@@ -157,6 +157,7 @@ test('user handling', (t) => {
   t.deepEqual(secondLi.tagName.toLowerCase(), 'li')
   t.deepEqual(secondLi.innerHTML, 'Jan')
   t.notDeepEqual(firstLi.style.color, secondLi.style.color)
+
   const mockClient1 = {
     clientId: 'enihcam',
     color: editorAdapter.otherSelections[0].color,
@@ -190,13 +191,9 @@ test('user handling', (t) => {
 
   // Tim's editor loses focus
   serverAdapter.trigger('selection', 'enihcam', null)
+  mockClient2.color = editorAdapter.otherSelections[0].color
   t.deepEqual(editorAdapter.otherSelections, [
-    {
-      clientId: 'baia',
-      color: editorAdapter.otherSelections[0].color,
-      // because of our insertion, the selection spans one more character
-      selection: new Selection([new Range(4, 8)])
-    }
+    mockClient2
   ])
 
   // Tim closes his browser

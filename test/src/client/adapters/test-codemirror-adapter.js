@@ -58,7 +58,7 @@ test('converting between CodeMirror changes and operations', (t) => {
       }
     }
     if (n === 0) {
-      t.end()
+      t.pass()
     }
   }
 
