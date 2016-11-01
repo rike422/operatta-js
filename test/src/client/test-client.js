@@ -45,6 +45,7 @@ test('Test Client', t => {
     doc = operation.apply(doc)
     client.applyClient(operation)
   }
+
   function insertOperation (str) {
     applyClient(new TextOperation().retain(doc.length).insert(str))
   }

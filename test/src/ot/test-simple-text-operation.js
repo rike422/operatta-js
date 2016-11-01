@@ -47,7 +47,6 @@ test('Test SimpleTextOperation.transform', t => {
     }
     t.deepEqual(abPrime[0].apply(b.apply(doc)), abPrime[1].apply(a.apply(doc)))
   })
-
 })
 
 test('Test SimpleTextOperation.fromTextOperation', t => {
