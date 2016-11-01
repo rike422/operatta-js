@@ -133,7 +133,9 @@ export default class CodeMirrorAdapter extends EditorAdapter {
   }
 
   applyOperation (operation) {
-    this.ignoreNextChange = true
+    if (!operation.isNoop()) {
+      this.ignoreNextChange = true
+    }
     CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
   }
 

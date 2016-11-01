@@ -172,12 +172,27 @@ test('applyOperation should apply the operation to CodeMirror, but not trigger a
   const doc = 'nanana'
   const cm = CodeMirror(document.body, { value: doc })
   const cmAdapter = new CodeMirrorAdapter(cm)
-  cmAdapter.onChange(() => {
-    throw new Error("change shouldn't be called!")
-  })
+  const spy = sinon.spy()
+  cmAdapter.onChange(spy)
   cmAdapter.applyOperation(new TextOperation().retain(6).insert('nu'))
   t.truthy(cm.getValue() === cmAdapter.getValue())
   t.truthy(cmAdapter.getValue() === 'nanananu')
+  t.falsy(spy.called)
+})
+
+test('applyOperation should not ignore the next change if this change is a noop', (t) => {
+  const doc = 'nanana'
+  const cm = CodeMirror(document.body, { value: doc })
+  const cmAdapter = new CodeMirrorAdapter(cm)
+  const spy = sinon.spy()
+  cmAdapter.onChange(spy)
+  // Apply noop
+  cmAdapter.applyOperation(new TextOperation().retain(5))
+  // Apply an actual change
+  CodeMirrorAdapter.applyOperationToCodeMirror(new TextOperation().retain(6).insert('nu'), cm)
+  t.truthy(cm.getValue() === cmAdapter.getValue())
+  t.truthy(cmAdapter.getValue() === 'nanananu')
+  t.truthy(spy.calledOnce)
 })
 
 test('getValue', (t) => {
@@ -241,4 +256,3 @@ test('setOtherSelection', (t) => {
   t.deepEqual(cm.getAllMarks().map(x => x.find()), [],
     'the codemirror instance should contain no more marks')
 })
-
