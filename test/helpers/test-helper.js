@@ -87,11 +87,13 @@ export default {
   // A random test generates random data to check some invariants. To increase
   // confidence in a random test, it is run repeatedly.
   randomTest (n, fun) {
-    return test => {
-      while (n--) {
-        fun(test)
-      }
-      test.done()
-    }
+    return Promise.all(
+      Array.from(Array(n).keys()).map(() => {
+        return new Promise((resolve, reject) => {
+          fun()
+          resolve()
+        })
+      })
+    )
   }
 }

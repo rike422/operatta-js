@@ -21,7 +21,7 @@ function randomSimpleTextOperation (doc) {
 
   const position = h.randomInt(doc.length)
   const count = 1 + h.randomInt(Math.min(10, doc.length - position))
-  return Delete(count, position)
+  return new Delete(count, position)
 }
 
 test('Test SimpleTextOperation#apply', t => {
@@ -31,10 +31,11 @@ test('Test SimpleTextOperation#apply', t => {
 })
 
 test('Test SimpleTextOperation.transform', t => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     const doc = h.randomString(15)
     const a = randomSimpleTextOperation(doc)
     const b = randomSimpleTextOperation(doc)
+
     const abPrime = SimpleTextOperation.transform(a, b)
     if (abPrime[0].apply(b.apply(doc)) !== abPrime[1].apply(a.apply(doc))) {
       console.log('------------------------')
@@ -46,10 +47,11 @@ test('Test SimpleTextOperation.transform', t => {
     }
     t.deepEqual(abPrime[0].apply(b.apply(doc)), abPrime[1].apply(a.apply(doc)))
   })
+
 })
 
 test('Test SimpleTextOperation.fromTextOperation', t => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     let doc = h.randomString(40)
     const operation = h.randomOperation(doc)
     const doc1 = operation.apply(doc)

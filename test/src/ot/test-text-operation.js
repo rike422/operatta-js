@@ -41,7 +41,7 @@ test('Test TextOperation.testChaining', (t) => {
 })
 
 test('Test TextOperation#apply', (t) => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     const str = h.randomString(50)
     const o = h.randomOperation(str)
     t.deepEqual(str.length, o.baseLength)
@@ -50,7 +50,7 @@ test('Test TextOperation#apply', (t) => {
 })
 
 test('Test TextOperation#invert', (t) => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     const str = h.randomString(50)
     const o = h.randomOperation(str)
     const p = o.invert(str)
@@ -125,7 +125,7 @@ test('Test TextOperation#toString', (t) => {
 })
 
 test('Test TextOperation#IdString', (t) => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     const doc = h.randomString(50)
     const operation = h.randomOperation(doc)
     t.truthy(operation.equals(TextOperation.fromJSON(operation.toJSON())))
@@ -187,7 +187,7 @@ test('Test TextOperation should be compose with', (t) => {
 })
 
 test('Test TextOperation should be compose with inverted', (t) => {
-  h.randomTest(2 * n, () => {
+  return h.randomTest(2 * n, () => {
     // invariant: shouldBeComposedWith(a, b) = shouldBeComposedWithInverted(b^{-1}, a^{-1})
     const str = h.randomString()
     const a = h.randomOperation(str)
@@ -200,7 +200,7 @@ test('Test TextOperation should be compose with inverted', (t) => {
 })
 
 test('Test TextOperation#compose', (t) => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     // invariant: apply(str, compose(a, b)) === apply(apply(str, a), b)
     const str = h.randomString(20)
     const a = h.randomOperation(str)
@@ -218,7 +218,7 @@ test('Test TextOperation#compose', (t) => {
 })
 
 test('Test TextOperation#transfomr', (t) => {
-  h.randomTest(n, () => {
+  return h.randomTest(n, () => {
     // invariant: compose(a, b') = compose(b, a')
     // where (a', b') = transform(a, b)
     const str = h.randomString(20)
