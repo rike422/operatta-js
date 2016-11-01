@@ -1,3 +1,4 @@
+// @flow
 export default class TextOperation {
   constructor () {
     // When an operation is applied to an input string, you can think of this as

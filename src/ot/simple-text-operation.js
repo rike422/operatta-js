@@ -1,3 +1,4 @@
+// @flow
 import TextOperation from './text-operation'
 
 // Insert the string `str` at the zero-based `position` in the document.

@@ -1,3 +1,4 @@
+// @flow
 import fetch from 'node-fetch'
 import Connector from './connector'
 

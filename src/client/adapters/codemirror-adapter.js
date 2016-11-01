@@ -1,3 +1,4 @@
+// @flow
 import TextOperation from 'ot/text-operation'
 import Selection from 'client/selection'
 import EditorAdapter from './adapter'

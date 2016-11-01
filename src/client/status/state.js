@@ -1,3 +1,4 @@
+// @flow weak
 export default class State {
   constructor (client) {
     this.client = client

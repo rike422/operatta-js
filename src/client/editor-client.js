@@ -1,3 +1,4 @@
+// @flow
 import Client from 'client/client'
 import AwaitingWithBuffer from 'client/status/awaiting-with-buffer'
 import OtherClient from 'client/other-client'

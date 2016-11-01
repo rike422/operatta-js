@@ -1,3 +1,4 @@
+// @flow weak
 import State from './state'
 import Synchronized from './synchronized'
 import AwaitingWithBuffer from './awaiting-with-buffer'

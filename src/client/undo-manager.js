@@ -1,3 +1,4 @@
+// @flow
 const NORMAL_STATE = 'normal'
 const UNDOING_STATE = 'undoing'
 const REDOING_STATE = 'redoing'

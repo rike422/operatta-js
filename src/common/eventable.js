@@ -1,3 +1,4 @@
+// @flow weak
 export default class Eventable {
 
   constructor () {
@@ -12,7 +13,7 @@ export default class Eventable {
 
   off (type, fn) {
     const callBacks = this.callbacks[type] || []
-    this.callbacks[type] = callBacks.filter(_fn => fn === _fn)
+    this.callbacks[type] = callBacks.filter(_fn => fn !== _fn)
   }
 
   trigger (type, ...args) {

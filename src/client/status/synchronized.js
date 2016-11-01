@@ -1,3 +1,4 @@
+// @flow
 import State from './state'
 import AwaitingConfirm from './awaiting-confirm'
 

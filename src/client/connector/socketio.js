@@ -1,3 +1,4 @@
+// @flow
 import Connector from './connector'
 export default class SocketIO extends Connector {
   constructor (socket) {

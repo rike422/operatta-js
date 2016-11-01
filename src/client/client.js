@@ -1,16 +1,17 @@
-// translation of https://github.com/djspiewak/cccp/blob/master/agent/src/main/scala/com/codecommit/cccp/agent/state.scala
+// @flow
 import Synchronized from './status/synchronized'
 import State from './status/state'
+import Selection from 'client/selection'
 
 export default class Client {
 
 
-  constructor (revision) {
+  constructor (revision: number) {
     this.revision = revision // the next expected revision number
     this.state = new Synchronized(this) // start state
   }
 
-  setState (state) {
+  setState (state: State) {
     this.state = state
   }
 
@@ -25,12 +26,12 @@ export default class Client {
     this.state.applyServer(operation)
   }
 
-  serverAck () {
+  serverAck (): void {
     this.revision++
     this.state.serverAck()
   }
 
-  serverReconnect () {
+  serverReconnect (): void {
     if (typeof this.state.resend === 'function') {
       this.state.resend()
     }
@@ -42,7 +43,7 @@ export default class Client {
   }
 
   // Override this method.
-  sendOperation (revision, operation) {
+  sendOperation (revision: number, operation) {
     throw new Error('sendOperation must be defined in child class')
   }
 
@@ -52,7 +53,7 @@ export default class Client {
   // our newest operation, an insertion of 5 characters at the beginning of the
   // document, the correct position of the other user's cursor in our current
   // document is 8.
-  transformSelection (selection) {
+  transformSelection (selection: Selection): Selection {
     return this.state.transformSelection(selection)
   }
 }

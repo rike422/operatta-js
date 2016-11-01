@@ -1,3 +1,4 @@
+// @flow
 import { hsl2hex, hueFromName } from 'common/colors'
 import Selection from 'client/selection'
 

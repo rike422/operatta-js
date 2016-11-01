@@ -1,3 +1,5 @@
+// @flow
+
 import { EventEmitter } from 'events'
 
 // Constructor. Takes the current document as a string and optionally the array

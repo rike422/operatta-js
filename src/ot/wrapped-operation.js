@@ -1,3 +1,4 @@
+// @flow
 export default class WrappedOperation {
   constructor (operation, meta) {
     this.wrapped = operation

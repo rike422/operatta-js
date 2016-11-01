@@ -1,3 +1,4 @@
+// @flow
 import TextOperation from 'ot/text-operation'
 import WrappedOperation from 'ot/wrapped-operation'
 import Server from './server'

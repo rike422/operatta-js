@@ -1,3 +1,4 @@
+// @flow
 import Eventable from 'common/eventable'
 
 export default class Connector extends Eventable {

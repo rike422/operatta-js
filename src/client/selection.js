@@ -1,3 +1,4 @@
+// @flow
 import TextOperation from 'ot/text-operation'
 
 // Range has `anchor` and `head` properties, which are zero-based indices into

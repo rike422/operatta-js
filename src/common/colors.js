@@ -1,3 +1,4 @@
+// @flow
 export function rgb2hex (r, g, b) {
   function digits (n) {
     const m = Math.round(255 * n).toString(16)
