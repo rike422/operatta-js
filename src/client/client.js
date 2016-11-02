@@ -1,13 +1,9 @@
 // translation of https://github.com/djspiewak/cccp/blob/master/agent/src/main/scala/com/codecommit/cccp/agent/state.scala
-import AwaitingConfirm from './status/awaiting-confirm'
-import AwaitingWithBuffer from './status/awaiting-with-buffer'
 import Synchronized from './status/synchronized'
+import State from './status/state'
 
 export default class Client {
 
-  static AwaitingConfirm = AwaitingConfirm
-  static AwaitingWithBuffer = AwaitingWithBuffer
-  static Synchronized = Synchronized
 
   constructor (revision) {
     this.revision = revision // the next expected revision number

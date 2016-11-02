@@ -1,4 +1,5 @@
 import Client from 'client/client'
+import AwaitingWithBuffer from 'client/status/awaiting-with-buffer'
 import OtherClient from 'client/other-client'
 import Selection from 'client/selection'
 import UndoManager from 'client/undo-manager'
@@ -211,7 +212,7 @@ export default class EditorClient extends Client {
   }
 
   sendSelection (selection) {
-    if (this.state instanceof Client.AwaitingWithBuffer) {
+    if (this.state instanceof AwaitingWithBuffer) {
       return
     }
     this.serverAdapter.sendSelection(selection)
