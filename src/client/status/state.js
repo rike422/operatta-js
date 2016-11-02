@@ -1,10 +1,31 @@
-// @flow weak
+// @flow
+import Client from 'client/client'
+import Selection from 'client/selection'
+import TextOperation from 'ot/text-operation'
+
 export default class State {
-  constructor (client) {
+  client: Client;
+
+  constructor (client: Client): void {
     this.client = client
   }
 
-  transition (State, ...args) {
-    this.client.setState(new State(this.client, ...args))
+  transition (nextState: State): void {
+    this.client.setState(nextState)
   }
+
+  serverAck (): void {
+  }
+
+  resend (client: Client): void {
+  }
+
+  applyServer (operation: TextOperation): void {
+  }
+
+  applyClient (operation: TextOperation): void {
+  }
+
+  transformSelection (x: Selection): Selection { return x }
 }
+

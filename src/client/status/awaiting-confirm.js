@@ -1,24 +1,29 @@
-// @flow weak
+// @flow
 import State from './state'
 import Synchronized from './synchronized'
 import AwaitingWithBuffer from './awaiting-with-buffer'
+import Client from 'client/client'
+import Selection from 'client/selection'
+import TextOperation from 'ot/text-operation'
 
 // In the 'AwaitingConfirm' state, there's one operation the client has sent
 // to the server and is still waiting for an acknowledgement.
 export default class AwaitingConfirm extends State {
-  constructor (client, outstanding) {
+  outstanding: any
+
+  constructor (client: Client, outstanding: any): void {
     super(client)
     // Save the pending operation
     this.outstanding = outstanding
   }
 
-  applyClient (operation) {
+  applyClient (operation: TextOperation): void {
     // When the user makes an edit, don't send the operation immediately,
     // instead switch to 'AwaitingWithBuffer' state
-    this.transition(AwaitingWithBuffer, this.outstanding, operation)
+    this.transition(new AwaitingWithBuffer(this.client, this.outstanding, operation))
   }
 
-  applyServer (operation) {
+  applyServer (operation: TextOperation): void {
     // This is another client's operation. Visualization:
     //
     //                   /\
@@ -31,22 +36,22 @@ export default class AwaitingConfirm extends State {
     //  current document)
     const pair = operation.constructor.transform(this.outstanding, operation)
     this.client.applyOperation(pair[1])
-    this.transition(AwaitingConfirm, pair[0])
+    this.transition(new AwaitingConfirm(this.client, pair[0]))
   }
 
-  transformSelection (selection) {
+  transformSelection (selection: Selection): Selection {
     return selection.transform(this.outstanding)
   }
 
-  resend (client) {
+  resend (client: Client): void {
     // The confirm didn't come because the client was disconnected.
     // Now that it has reconnected, we resend the outstanding operation.
     client.sendOperation(client.revision, this.outstanding)
   }
 
-  serverAck () {
+  serverAck (): void {
     // The client's operation has been acknowledged
     // => switch to synchronized state
-    this.transition(Synchronized)
+    this.transition(new Synchronized(this.client))
   }
 }
