@@ -1,11 +1,18 @@
 // @flow
-const NORMAL_STATE = 'normal'
-const UNDOING_STATE = 'undoing'
-const REDOING_STATE = 'redoing'
+import WrappedOperation from 'ot/wrapped-operation'
+const NORMAL_STATE: string = 'normal'
+const UNDOING_STATE: string = 'undoing'
+const REDOING_STATE: string = 'redoing'
 
 // Create a new UndoManager with an optional maximum history size.
 export default class UndoManager {
-  constructor (maxItems) {
+  maxItems: number
+  state: string
+  dontCompose: boolean
+  undoStack: Array<WrappedOperation>
+  redoStack: Array<WrappedOperation>
+
+  constructor (maxItems: ?number): void {
     this.maxItems = maxItems || 50
     this.state = NORMAL_STATE
     this.dontCompose = false
@@ -18,7 +25,7 @@ export default class UndoManager {
   // edit. When `compose` is true, compose the operation with the last operation
   // unless the last operation was alread pushed on the redo stack or was hidden
   // by a newer operation on the undo stack.
-  add (operation, compose) {
+  add (operation: WrappedOperation, compose: ?boolean): void {
     if (this.state === UNDOING_STATE) {
       this.redoStack.push(operation)
       this.dontCompose = true
@@ -41,7 +48,7 @@ export default class UndoManager {
   }
 
   // Transform the undo and redo stacks against a operation by another client.
-  transform (operation) {
+  transform (operation: WrappedOperation): void {
     this.undoStack = transformStack(this.undoStack, operation)
     this.redoStack = transformStack(this.redoStack, operation)
   }
@@ -49,7 +56,7 @@ export default class UndoManager {
   // Perform an undo by calling a function with the latest operation on the undo
   // stack. The function is expected to call the `add` method with the inverse
   // of the operation, which pushes the inverse on the redo stack.
-  performUndo (fn) {
+  performUndo (fn: (op: WrappedOperation) => void): void {
     this.state = UNDOING_STATE
     if (this.undoStack.length === 0) {
       throw new Error('undo not possible')
@@ -59,7 +66,7 @@ export default class UndoManager {
   }
 
   // The inverse of `performUndo`.
-  performRedo (fn) {
+  performRedo (fn: (op: WrappedOperation) => void): void {
     this.state = REDOING_STATE
     if (this.redoStack.length === 0) {
       throw new Error('redo not possible')
@@ -69,30 +76,30 @@ export default class UndoManager {
   }
 
   // Is the undo stack not empty?
-  canUndo () {
+  canUndo (): boolean {
     return this.undoStack.length !== 0
   }
 
   // Is the redo stack not empty?
-  canRedo () {
+  canRedo (): boolean {
     return this.redoStack.length !== 0
   }
 
   // Whether the UndoManager is currently performing an undo.
-  isUndoing () {
+  isUndoing (): boolean {
     return this.state === UNDOING_STATE
   }
 
   // Whether the UndoManager is currently performing a redo.
-  isRedoing () {
+  isRedoing (): boolean {
     return this.state === REDOING_STATE
   }
 }
 
-function transformStack (stack, operation) {
+function transformStack (stack, operation: WrappedOperation) {
   const newStack = []
   const Operation = operation.constructor
-  for (let i = stack.length - 1; i >= 0; i--) {
+  for (let i: number = stack.length - 1; i >= 0; i--) {
     const pair = Operation.transform(stack[i], operation)
     if (typeof pair[0].isNoop !== 'function' || !pair[0].isNoop()) {
       newStack.push(pair[0])
@@ -101,4 +108,3 @@ function transformStack (stack, operation) {
   }
   return newStack.reverse()
 }
-

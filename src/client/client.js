@@ -1,27 +1,30 @@
 // @flow
-import Synchronized from './status/synchronized'
-import State from './status/state'
+import Synchronized from 'client/status/synchronized'
+import State from 'client/status/state'
 import Selection from 'client/selection'
+import TextOperation from 'ot/text-operation'
 
 export default class Client {
 
+  revision: number;
+  state: State;
 
-  constructor (revision: number) {
+  constructor (revision: number): void {
     this.revision = revision // the next expected revision number
     this.state = new Synchronized(this) // start state
   }
 
-  setState (state: State) {
+  setState (state: State): void {
     this.state = state
   }
 
   // Call this method when the user changes the document.
-  applyClient (operation) {
+  applyClient (operation: TextOperation): void {
     this.state.applyClient(operation)
   }
 
   // Call this method with a new operation from the server
-  applyServer (operation) {
+  applyServer (operation: TextOperation): void {
     this.revision++
     this.state.applyServer(operation)
   }
@@ -33,17 +36,17 @@ export default class Client {
 
   serverReconnect (): void {
     if (typeof this.state.resend === 'function') {
-      this.state.resend()
+      this.state.resend(this)
     }
   }
 
   // Override this method.
-  applyOperation (operation) {
+  applyOperation (operation: TextOperation) {
     throw new Error('applyOperation must be defined in child class')
   }
 
   // Override this method.
-  sendOperation (revision: number, operation) {
+  sendOperation (revision: number, operation: TextOperation) {
     throw new Error('sendOperation must be defined in child class')
   }
 
