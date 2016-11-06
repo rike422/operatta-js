@@ -1,9 +1,16 @@
 // @flow
 import fetch from 'node-fetch'
 import Connector from './connector'
+import Selection from 'client/selection'
+import { revsionData, xhrData } from 'types/data'
 
 export default class AjaxAdapter extends Connector {
-  constructor (path, ownUserName, revision) {
+  path: string
+  ownUserName: string
+  majorRevision: number
+  minorRevision: number
+
+  constructor (path: string, ownUserName: string, revision: revsionData): void {
     super()
     if (path[path.length - 1] !== '/') {
       path += '/'
@@ -15,13 +22,13 @@ export default class AjaxAdapter extends Connector {
     this.poll()
   }
 
-  renderRevisionPath () {
+  renderRevisionPath (): string {
     return `revision/${this.majorRevision}-${this.minorRevision}`
   }
 
-  handleResponse (data) {
-    let i
-    const operations = data.operations
+  handleResponse (data: xhrData): void {
+    let i: number
+    const operations: Array<any> = data.operations
     for (i = 0; i < operations.length; i++) {
       if (operations[i].user === this.ownUserName) {
         this.trigger('ack')
@@ -35,7 +42,7 @@ export default class AjaxAdapter extends Connector {
       this.minorRevision = 0
     }
 
-    const events = data.events
+    const events: Array<any> = data.events
     if (events) {
       for (i = 0; i < events.length; i++) {
         const user = events[i].user
@@ -69,28 +76,28 @@ export default class AjaxAdapter extends Connector {
     }
   }
 
-  poll () {
-    const url = this.path + this.renderRevisionPath()
+  poll (): void {
+    const url: string = this.path + this.renderRevisionPath()
     fetch(url, {
       headers: {
         contentType: 'application/json'
       },
       timeout: 5000
-    }).then((data) => {
+    }).then((data): void => {
       this.handleResponse(data.json())
       this.poll()
-    }).catch((e) => {
-      setTimeout(() => {
+    }).catch((e): void => {
+      setTimeout((): void => {
         this.poll()
       }, 500)
     })
   }
 
-  sendOperation (revision, operation, selection) {
+  sendOperation (revision: number, operation: Array<any>, selection: Selection): void {
     if (revision !== this.majorRevision) {
       throw new Error('Revision numbers out of sync')
     }
-    const url = this.path + this.renderRevisionPath()
+    const url: string = this.path + this.renderRevisionPath()
 
     fetch(url, {
       method: 'POST',
@@ -98,15 +105,15 @@ export default class AjaxAdapter extends Connector {
       headers: {
         contentType: 'application/json'
       }
-    }).catch((e) => {
-      setTimeout(() => {
+    }).catch((e): void => {
+      setTimeout((): void => {
         this.sendOperation(revision, operation, selection)
       }, 500)
     })
   }
 
-  sendSelection (obj) {
-    const url = `${this.path + this.renderRevisionPath()}/selection`
+  sendSelection (obj: any): void {
+    const url: string = `${this.path + this.renderRevisionPath()}/selection`
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(obj),
@@ -115,10 +122,6 @@ export default class AjaxAdapter extends Connector {
       },
       timeout: 1000
     })
-  }
-
-  registerCallbacks (cb) {
-    this.callbacks = cb
   }
 }
 
