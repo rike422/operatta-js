@@ -1,18 +1,21 @@
 // @flow
-
-import { EventEmitter } from 'events'
+import { revisionData } from 'types/data'
+import EventEmitter from 'events'
+import WrappedOperation from 'ot/wrapped-operation'
 
 // Constructor. Takes the current document as a string and optionally the array
 // of all operations.
 export default class Server extends EventEmitter {
-  constructor (document, operations) {
+  operations: Array<any>
+  document: string
+  constructor (document: string, operations: Array<any>): void {
     super()
     this.document = document
     this.operations = operations || []
   }
 
   // Call this method whenever you receive an operation from a client.
-  receiveOperation (revision, operation) {
+  receiveOperation (revision: revisionData, operation: WrappedOperation) {
     if (revision < 0 || this.operations.length < revision) {
       throw new Error('operation revision not in history')
     }
@@ -22,7 +25,7 @@ export default class Server extends EventEmitter {
 
     // ... and transform the operation against all these operations ...
     const transform = operation.constructor.transform
-    for (let i = 0; i < concurrentOperations.length; i++) {
+    for (let i: number = 0; i < concurrentOperations.length; i++) {
       operation = transform(operation, concurrentOperations[i])[0]
     }
 
