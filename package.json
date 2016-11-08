@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "node-fetch": "^1.6.3",
-    "socket.io": "1.5.1"
+    "socket.io": "1.5.1",
+    "socket.io-client": "^1.5.1"
   },
   "devDependencies": {
     "ava": "avajs/ava#master",
