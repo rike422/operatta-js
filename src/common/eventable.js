@@ -1,22 +1,27 @@
-export default class Eventable {
+// @flow
 
-  constructor () {
+type callback = (...args: Array<any>) => void;
+
+export default class Eventable {
+  callbacks: { [key: string]: callback };
+
+  constructor (): void {
     this.callbacks = {}
   }
 
-  on (type, fn) {
-    const callBacks = this.callbacks[type] || []
+  on (type: string, fn: callback): void {
+    const callBacks: () => void = this.callbacks[type] || []
     callBacks.push(fn)
     this.callbacks[type] = callBacks
   }
 
-  off (type, fn) {
-    const callBacks = this.callbacks[type] || []
-    this.callbacks[type] = callBacks.filter(_fn => fn === _fn)
+  off (type: string, fn: callback): void {
+    const callBacks: () => void = this.callbacks[type] || []
+    this.callbacks[type] = callBacks.filter((_fn): boolean => _fn !== fn)
   }
 
-  trigger (type, ...args) {
-    const callBacks = this.callbacks && this.callbacks[type]
+  trigger (type: string, ...args: Array<any>): void {
+    const callBacks: () => void = this.callbacks && this.callbacks[type]
     if (callBacks === undefined) {
       return
     }

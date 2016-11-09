@@ -1,52 +1,52 @@
-// translation of https://github.com/djspiewak/cccp/blob/master/agent/src/main/scala/com/codecommit/cccp/agent/state.scala
-import AwaitingConfirm from './status/awaiting-confirm'
-import AwaitingWithBuffer from './status/awaiting-with-buffer'
-import Synchronized from './status/synchronized'
+// @flow
+import Synchronized from 'client/status/synchronized'
+import State from 'client/status/state'
+import Selection from 'client/selection'
+import TextOperation from 'ot/text-operation'
 
 export default class Client {
 
-  static AwaitingConfirm = AwaitingConfirm
-  static AwaitingWithBuffer = AwaitingWithBuffer
-  static Synchronized = Synchronized
+  revision: number;
+  state: State;
 
-  constructor (revision) {
+  constructor (revision: number): void {
     this.revision = revision // the next expected revision number
     this.state = new Synchronized(this) // start state
   }
 
-  setState (state) {
+  setState (state: State): void {
     this.state = state
   }
 
   // Call this method when the user changes the document.
-  applyClient (operation) {
+  applyClient (operation: TextOperation): void {
     this.state.applyClient(operation)
   }
 
   // Call this method with a new operation from the server
-  applyServer (operation) {
+  applyServer (operation: TextOperation): void {
     this.revision++
     this.state.applyServer(operation)
   }
 
-  serverAck () {
+  serverAck (): void {
     this.revision++
     this.state.serverAck()
   }
 
-  serverReconnect () {
+  serverReconnect (): void {
     if (typeof this.state.resend === 'function') {
-      this.state.resend()
+      this.state.resend(this)
     }
   }
 
   // Override this method.
-  applyOperation (operation) {
+  applyOperation (operation: TextOperation) {
     throw new Error('applyOperation must be defined in child class')
   }
 
   // Override this method.
-  sendOperation (revision, operation) {
+  sendOperation (revision: number, operation: TextOperation) {
     throw new Error('sendOperation must be defined in child class')
   }
 
@@ -56,7 +56,7 @@ export default class Client {
   // our newest operation, an insertion of 5 characters at the beginning of the
   // document, the correct position of the other user's cursor in our current
   // document is 8.
-  transformSelection (selection) {
+  transformSelection (selection: Selection): Selection {
     return this.state.transformSelection(selection)
   }
 }

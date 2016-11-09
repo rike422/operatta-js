@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "node-fetch": "^1.6.3",
-    "socket.io": "1.5.1"
+    "socket.io": "1.5.1",
+    "socket.io-client": "^1.5.1"
   },
   "devDependencies": {
     "ava": "avajs/ava#master",
@@ -39,14 +40,14 @@
     "coveralls": "^2.11.14",
     "eslint": "^3.8.1",
     "eslint-config-standard": "^6.2.0",
-    "eslint-plugin-flowtype": "^2.21.0",
+    "eslint-plugin-flowtype": "^2.25.0",
     "eslint-plugin-promise": "^3.3.0",
     "eslint-plugin-standard": "^2.0.1",
     "fetch-mock": "^5.5.0",
     "fixpack": "^2.3.1",
-    "flow-bin": "^0.33.0",
+    "flow-bin": "^0.34.0",
     "jsdom": "^9.6.0",
-    "mock-socket": "^5.0.1",
+    "mock-socket": "^6.0.1",
     "nyc": "^8.3.2",
     "power-assert": "^1.4.1",
     "sinon": "^1.17.6",
@@ -103,6 +104,10 @@
       "test",
       "sinon"
     ],
+    "env": {
+      "browser": true,
+      "node": true
+    },
     "plugins": [
       "flowtype"
     ],

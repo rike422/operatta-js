@@ -4,7 +4,7 @@ import EditorAdapterMock from 'test/helpers/mocks/editor-adapter-mock'
 import ServerConnectorMock from 'test/helpers/mocks/server-connector-mock'
 import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
-import Client from 'client/client'
+import { Synchronized, AwaitingConfirm, AwaitingWithBuffer } from 'client/status/status'
 
 let _t
 
@@ -59,7 +59,7 @@ test('simulated editing session', (t) => {
   serverAdapter.trigger('operation', [6, -1, 'D', 4])
 
   t.deepEqual(editorAdapter.getValue(), 'lorem Dolor')
-  t.truthy(editorClient.state instanceof Client.Synchronized)
+  t.truthy(editorClient.state instanceof Synchronized)
   t.deepEqual(editorClient.revision, 2)
 
   // We append a single white space to the document
@@ -67,7 +67,7 @@ test('simulated editing session', (t) => {
   insertAndDelete(' ')
 
   editorAdapter.trigger('selectionChange')
-  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state instanceof AwaitingConfirm)
   t.deepEqual(serverAdapter.sentRevision, 2)
 
   assertOutstanding(11, ' ')
@@ -79,7 +79,7 @@ test('simulated editing session', (t) => {
   serverAdapter.trigger('operation', [5, ' ', 6])
   t.deepEqual(editorAdapter.getValue(), 'lorem  Dolor ')
   t.deepEqual(editorClient.revision, 3)
-  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state instanceof AwaitingConfirm)
   assertOutstanding(12, ' ')
 
   // Our cursor moved one char to the right because of that insertion. That
@@ -93,7 +93,7 @@ test('simulated editing session', (t) => {
 
   editorAdapter.trigger('selectionChange')
   // This operation should have been buffered
-  t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
+  t.truthy(editorClient.state instanceof AwaitingWithBuffer)
   t.deepEqual(serverAdapter.sentRevision, 2) // last revision
   t.deepEqual(serverAdapter.sentOperation, [11, ' ']) // last operation
   t.truthy(serverAdapter.sentSelection.equals(Selection.createCursor(13)))
@@ -116,7 +116,7 @@ test('simulated editing session', (t) => {
   serverAdapter.trigger('operation', [6, 'Ipsum', 6])
   t.deepEqual(editorClient.revision, 4)
   t.deepEqual(editorAdapter.getValue(), 'lorem Ipsum Dolor Sit')
-  t.truthy(editorClient.state instanceof Client.AwaitingWithBuffer)
+  t.truthy(editorClient.state instanceof AwaitingWithBuffer)
   assertOutstanding(17, ' ')
   assertBuffer(18, 'Sit')
   // Our cursor should have been shifted by that operation to position 21
@@ -127,7 +127,7 @@ test('simulated editing session', (t) => {
   t.deepEqual(serverAdapter.sentRevision, 5)
   t.deepEqual(serverAdapter.sentOperation, [18, 'Sit'])
   t.deepEqual(editorClient.revision, 5)
-  t.truthy(editorClient.state instanceof Client.AwaitingConfirm)
+  t.truthy(editorClient.state instanceof AwaitingConfirm)
   assertOutstanding(18, 'Sit')
 
   // We switch to another program. The browser window and the editor lose their
@@ -139,7 +139,7 @@ test('simulated editing session', (t) => {
   serverAdapter.trigger('ack')
   t.deepEqual(editorClient.revision, 6)
   t.deepEqual(serverAdapter.sentRevision, 5)
-  t.truthy(editorClient.state instanceof Client.Synchronized)
+  t.truthy(editorClient.state instanceof Synchronized)
   t.deepEqual(editorAdapter.getValue(), 'lorem Ipsum Dolor Sit')
 })
 
