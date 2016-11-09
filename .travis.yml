@@ -5,8 +5,8 @@ services:
 
 language: node_js
 node_js:
-  - "6.1.0"
-  - "4.4.7"
+  - 'stable'
+  - 'lts/*'
 
 cache:
   directories:
