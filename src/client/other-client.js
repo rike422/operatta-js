@@ -1,32 +1,32 @@
 // @flow
 import { hsl2hex, hueFromName } from 'common/colors'
-import { clientData } from 'types/data'
 import Selection from 'client/selection'
 import Adapter from 'client/adapters/adapter'
 
-class OtherMeta {
-  clientId: string
-  selection: Selection
-
-  static fromJSON = (obj: clientData): OtherMeta => {
-    return new OtherMeta(
-      obj.clientId,
-      obj.selection && Selection.fromJSON(obj.selection)
-    )
-  }
-
-  constructor (clientId: string, selection: Selection): void {
-    this.clientId = clientId
-    this.selection = selection
-  }
-
-  transform (operation): OtherMeta {
-    return new OtherMeta(
-      this.clientId,
-      this.selection && this.selection.transform(operation)
-    )
-  }
-}
+// import { clientData } from 'types/data'
+// class OtherMeta {
+//   clientId: string
+//   selection: Selection
+//
+//   static fromJSON = (obj: clientData): OtherMeta => {
+//     return new OtherMeta(
+//       obj.clientId,
+//       obj.selection && Selection.fromJSON(obj.selection)
+//     )
+//   }
+//
+//   constructor (clientId: string, selection: Selection): void {
+//     this.clientId = clientId
+//     this.selection = selection
+//   }
+//
+//   transform (operation): OtherMeta {
+//     return new OtherMeta(
+//       this.clientId,
+//       this.selection && this.selection.transform(operation)
+//     )
+//   }
+// }
 
 export default class OtherClient {
   id: string

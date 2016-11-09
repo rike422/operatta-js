@@ -104,6 +104,10 @@
       "test",
       "sinon"
     ],
+    "env": {
+      "browser": true,
+      "node": true
+    },
     "plugins": [
       "flowtype"
     ],

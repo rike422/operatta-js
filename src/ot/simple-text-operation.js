@@ -75,7 +75,7 @@ export default class SimpleTextOperation {
   static Insert = Insert
   static Delete = Delete
   static Noop = Noop
-  static transform = (a, b): [$Either<Insert, Noop, Delete>, $Either<Insert, Noop, Delete>] => {
+  static transform = (a, b): [Insert| Noop | Delete, Insert | Noop | Delete] => {
     if (a instanceof Noop || b instanceof Noop) {
       return [a, b]
     }

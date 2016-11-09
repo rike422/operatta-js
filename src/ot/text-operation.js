@@ -1,6 +1,4 @@
 // @flow
-import Selection from 'client/selection'
-import rangeData from 'types/data'
 
 // Operation are essentially lists of ops. There are three types of ops:
 //

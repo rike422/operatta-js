@@ -87,9 +87,9 @@ const operationFromCodeMirrorChanges = (changes: Array<EditorChange>, doc: Doc):
           ch = pos.ch - change.to.ch + last(change.text).length
         }
         return indexFromPos({
-            line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
-            ch: ch
-          }) + sumLengths(change.removed) - sumLengths(change.text)
+          line: pos.line + change.text.length - 1 - (change.to.line - change.from.line),
+          ch: ch
+        }) + sumLengths(change.removed) - sumLengths(change.text)
       }
       if (change.from.line === pos.line) {
         return indexFromPos(change.from) + pos.ch - change.from.ch
@@ -234,7 +234,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
       throw new Error('only six-digit hex colors are allowed.')
     }
     const selectionClassName: string = `selection-${match[1]}`
-    const rule: string = `.${selectionClassName} { background: ${color}; }`
+    // const rule: string = `.${selectionClassName} { background: ${color}; }`
     // addStyleRule(rule)
 
     const anchorPos = this.cm.posFromIndex(range.anchor)
