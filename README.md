@@ -17,7 +17,7 @@
 
 - [ ] Ace integration
 - [ ] Textarea integration
-- [ ] flowtype
+- [x] flowtype
 - [ ] Demo App
 - [ ] [for Rails Gem](https://github.com/rike422/loose-leaf)
 
