@@ -1,6 +1,5 @@
 require('../../helpers/test-helper')
-import Selection from 'client/selection'
-const Range = Selection.Range
+import Selection, { Range} from 'client/selection'
 import TextOperation from 'ot/text-operation'
 
 test('Test Selection.testCreateCursor', t => {
