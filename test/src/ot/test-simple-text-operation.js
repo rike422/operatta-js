@@ -49,6 +49,25 @@ test('Test SimpleTextOperation.transform', t => {
   })
 })
 
+test('Test SimpleTextOperation.transform when same operations', t => {
+  return h.randomTest(n, () => {
+    const doc = h.randomString(15)
+    const a = randomSimpleTextOperation(doc)
+    const b = Object.create(a)
+
+    const abPrime = SimpleTextOperation.transform(a, b)
+    if (abPrime[0].apply(b.apply(doc)) !== abPrime[1].apply(a.apply(doc))) {
+      console.log('------------------------')
+      console.log(doc)
+      console.log(a.toString())
+      console.log(b.toString())
+      console.log(abPrime[0].toString())
+      console.log(abPrime[1].toString())
+    }
+    t.deepEqual(abPrime[0].apply(b.apply(doc)), abPrime[1].apply(a.apply(doc)))
+  })
+})
+
 test('Test SimpleTextOperation.fromTextOperation', t => {
   return h.randomTest(n, () => {
     let doc = h.randomString(40)

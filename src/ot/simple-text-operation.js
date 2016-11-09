@@ -1,5 +1,4 @@
 // @flow
-
 import TextOperation from './text-operation'
 
 // Insert the string `str` at the zero-based `position` in the document.
@@ -75,9 +74,36 @@ export default class SimpleTextOperation {
   static Insert = Insert
   static Delete = Delete
   static Noop = Noop
+
   static transform = (a, b): [Insert| Noop | Delete, Insert | Noop | Delete] => {
-    if (a instanceof Noop || b instanceof Noop) {
+    if (a.equals(b)) {
       return [a, b]
+    }
+
+    const offsetInsertAndDelete = (a: Insert, b: Delete): [Insert| Noop | Delete, Insert | Noop | Delete] => {
+      if (a.position <= b.position) {
+        return [a, new Delete(b.count, b.position + a.str.length)]
+      }
+      if (a.position >= b.position + b.count) {
+        return [new Insert(a.str, a.position - b.count), b]
+      }
+      // Here, we have to delete the inserted string of operation a.
+      // That doesn't preserve the intention of operation a, but it's the only
+      // thing we can do to get a valid transform function.
+      return [noop, new Delete(b.count + a.str.length, b.position)]
+    }
+
+    const offSetPosition = (a: Delete, b: Delete): [Insert | Noop | Delete, Insert | Noop | Delete] => {
+      if (a.position + a.count <= b.position) {
+        return [a, new Delete(b.count, b.position - a.count)]
+      }
+      if (a.position + a.count >= b.position + b.count) {
+        return [new Delete(a.count - b.count, a.position), noop]
+      }
+      return [
+        new Delete(b.position - a.position, a.position),
+        new Delete(b.position + b.count - (a.position + a.count), a.position)
+      ]
     }
 
     if (a instanceof Insert && b instanceof Insert) {
@@ -91,64 +117,27 @@ export default class SimpleTextOperation {
     }
 
     if (a instanceof Insert && b instanceof Delete) {
-      if (a.position <= b.position) {
-        return [a, new Delete(b.count, b.position + a.str.length)]
-      }
-      if (a.position >= b.position + b.count) {
-        return [new Insert(a.str, a.position - b.count), b]
-      }
-      // Here, we have to delete the inserted string of operation a.
-      // That doesn't preserve the intention of operation a, but it's the only
-      // thing we can do to get a valid transform function.
-      return [noop, new Delete(b.count + a.str.length, b.position)]
+      return offsetInsertAndDelete(a, b)
     }
 
     if (a instanceof Delete && b instanceof Insert) {
-      if (a.position >= b.position) {
-        return [new Delete(a.count, a.position + b.str.length), b]
-      }
-      if (a.position + a.count <= b.position) {
-        return [a, new Insert(b.str, b.position - a.count)]
-      }
-      // Same problem as above. We have to delete the string that was inserted
-      // in operation b.
-      return [new Delete(a.count + b.str.length, a.position), noop]
+      return offsetInsertAndDelete(b, a).reverse()
     }
 
     if (a instanceof Delete && b instanceof Delete) {
       if (a.position === b.position) {
-        if (a.count === b.count) {
-          return [noop, noop]
-        } else if (a.count < b.count) {
+        if (a.count < b.count) {
           return [noop, new Delete(b.count - a.count, b.position)]
         }
         return [new Delete(a.count - b.count, a.position), noop]
       }
 
       if (a.position < b.position) {
-        if (a.position + a.count <= b.position) {
-          return [a, new Delete(b.count, b.position - a.count)]
-        }
-        if (a.position + a.count >= b.position + b.count) {
-          return [new Delete(a.count - b.count, a.position), noop]
-        }
-        return [
-          new Delete(b.position - a.position, a.position),
-          new Delete(b.position + b.count - (a.position + a.count), a.position)
-        ]
+        return offSetPosition(a, b)
       }
 
       if (a.position > b.position) {
-        if (a.position >= b.position + b.count) {
-          return [new Delete(a.count, a.position - b.count), b]
-        }
-        if (a.position + a.count <= b.position + b.count) {
-          return [noop, new Delete(b.count - a.count, b.position)]
-        }
-        return [
-          new Delete(a.position + a.count - (b.position + b.count), b.position),
-          new Delete(a.position - b.position, b.position)
-        ]
+        return offSetPosition(b, a).reverse()
       }
     }
     return [a, b]
