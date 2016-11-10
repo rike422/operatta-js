@@ -8,7 +8,7 @@ import WrappedOperation from 'ot/wrapped-operation'
 export default class Server extends EventEmitter {
   operations: Array<any>
   document: string
-  constructor (document: string, operations: Array<any>): void {
+  constructor (document: string, operations: Array<any>) {
     super()
     this.document = document
     this.operations = operations || []

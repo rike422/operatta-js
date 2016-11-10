@@ -14,7 +14,7 @@ export class Range {
     return new Range(obj.anchor, obj.head)
   }
 
-  constructor (anchor: number, head: number): void {
+  constructor (anchor: number, head: number) {
     this.anchor = anchor
     this.head = head
   }
@@ -76,7 +76,7 @@ export default class Selection {
     return new Selection(ranges)
   }
 
-  constructor (ranges: Array<Range>): void {
+  constructor (ranges: Array<Range>) {
     this.ranges = ranges || []
   }
 

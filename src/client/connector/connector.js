@@ -5,37 +5,37 @@ import { onAck, onClientLeft, onSetName, onOperation, onSelection, onReconnect, 
 
 export default class Connector extends Eventable {
 
-  onAck (fn: onAck): void {
+  onAck (fn: onAck) {
     this.on('ack', fn)
   }
 
-  onClientLeft (fn: onClientLeft): void {
+  onClientLeft (fn: onClientLeft) {
     this.on('client_left', fn)
   }
 
-  onOperation (fn: onOperation): void {
+  onOperation (fn: onOperation) {
     this.on('operation', fn)
   }
 
-  onSelection (fn: onSelection): void {
+  onSelection (fn: onSelection) {
     this.on('selection', fn)
   }
 
-  onSetName (fn: onSetName): void {
+  onSetName (fn: onSetName) {
     this.on('set_name', fn)
   }
 
-  onClients (fn: onClient): void {
+  onClients (fn: onClient) {
     this.on('clients', fn)
   }
 
-  onReconnect (fn: onReconnect): void {
+  onReconnect (fn: onReconnect) {
     this.on('reconnect', fn)
   }
 
-  sendOperation (revision: revisionData, operation: Array<any>, selection: selectionData): void {
+  sendOperation (revision: revisionData, operation: Array<any>, selection: selectionData) {
   }
 
-  sendSelection (selection: selectionData): void {
+  sendSelection (selection: selectionData) {
   }
 }

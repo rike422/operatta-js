@@ -5,7 +5,7 @@ export default class SelfMeta {
   selectionBefore: Selection
   selectionAfter: Selection
 
-  constructor (selectionBefore: Selection, selectionAfter: Selection): void {
+  constructor (selectionBefore: Selection, selectionAfter: Selection) {
     this.selectionBefore = selectionBefore
     this.selectionAfter = selectionAfter
   }

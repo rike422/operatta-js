@@ -12,7 +12,7 @@ export default class UndoManager {
   undoStack: Array<WrappedOperation>
   redoStack: Array<WrappedOperation>
 
-  constructor (maxItems: ?number): void {
+  constructor (maxItems: ?number) {
     this.maxItems = maxItems || 50
     this.state = NORMAL_STATE
     this.dontCompose = false
@@ -25,7 +25,7 @@ export default class UndoManager {
   // edit. When `compose` is true, compose the operation with the last operation
   // unless the last operation was alread pushed on the redo stack or was hidden
   // by a newer operation on the undo stack.
-  add (operation: WrappedOperation, compose: ?boolean): void {
+  add (operation: WrappedOperation, compose: ?boolean) {
     if (this.state === UNDOING_STATE) {
       this.redoStack.push(operation)
       this.dontCompose = true
@@ -48,7 +48,7 @@ export default class UndoManager {
   }
 
   // Transform the undo and redo stacks against a operation by another client.
-  transform (operation: WrappedOperation): void {
+  transform (operation: WrappedOperation) {
     this.undoStack = transformStack(this.undoStack, operation)
     this.redoStack = transformStack(this.redoStack, operation)
   }
@@ -56,7 +56,7 @@ export default class UndoManager {
   // Perform an undo by calling a function with the latest operation on the undo
   // stack. The function is expected to call the `add` method with the inverse
   // of the operation, which pushes the inverse on the redo stack.
-  performUndo (fn: (op: WrappedOperation) => void): void {
+  performUndo (fn: (op: WrappedOperation) => void) {
     this.state = UNDOING_STATE
     if (this.undoStack.length === 0) {
       throw new Error('undo not possible')
@@ -66,7 +66,7 @@ export default class UndoManager {
   }
 
   // The inverse of `performUndo`.
-  performRedo (fn: (op: WrappedOperation) => void): void {
+  performRedo (fn: (op: WrappedOperation) => void) {
     this.state = REDOING_STATE
     if (this.redoStack.length === 0) {
       throw new Error('redo not possible')
@@ -96,7 +96,7 @@ export default class UndoManager {
   }
 }
 
-function transformStack (stack, operation: WrappedOperation) {
+function transformStack (stack: Array<WrappedOperation>, operation: WrappedOperation): Array<WrappedOperation> {
   const newStack = []
   const Operation = operation.constructor
   for (let i: number = stack.length - 1; i >= 0; i--) {

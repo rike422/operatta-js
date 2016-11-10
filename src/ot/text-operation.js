@@ -162,7 +162,7 @@ export default class TextOperation {
     return o
   }
 
-  constructor (): void {
+  constructor () {
     // When an operation is applied to an input string, you can think of this as
     // if an imaginary cursor runs over the entire string and skips over some
     // parts, deletes some parts and inserts characters at some positions. These
@@ -315,7 +315,7 @@ export default class TextOperation {
     const newStr: Array<string> = []
     let strIndex: number = 0
     const ops: Array<any> = this.ops
-    ops.forEach((op): void => {
+    ops.forEach((op) => {
       if (isRetain(op)) {
         if (strIndex + op > str.length) {
           throw new Error("Operation can't retain more characters than are left in the string.")
@@ -344,7 +344,7 @@ export default class TextOperation {
     let strIndex: number = 0
     const inverse: TextOperation = new TextOperation()
     const ops: Array<any> = this.ops
-    ops.forEach((op): void => {
+    ops.forEach((op) => {
       if (isRetain(op)) {
         inverse.retain(op)
         strIndex += op

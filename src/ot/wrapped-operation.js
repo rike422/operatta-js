@@ -16,7 +16,7 @@ export default class WrappedOperation {
     ]
   }
 
-  constructor (operation: TextOperation, meta: SelfMeta): void {
+  constructor (operation: TextOperation, meta: ?SelfMeta) {
     this.wrapped = operation
     this.meta = meta
   }
