@@ -1,7 +1,7 @@
 // @flow
 import Connector from './connector'
 import { selectionData, revisionData } from 'types/data'
-import { Emitter as Socket } from 'socket.io-client'
+import type { Emitter as Socket } from 'socket.io-client'
 import EventEmitter from 'events'
 
 export default class SocketIO extends Connector {

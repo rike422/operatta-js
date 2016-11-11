@@ -1,9 +1,9 @@
 // @flow
+import type { Socket } from 'socket.io'
 import TextOperation from 'ot/text-operation'
 import WrappedOperation from 'ot/wrapped-operation'
 import Server from './server'
 import { revisionData } from 'types/data'
-import { Socket } from 'socket.io'
 import Selection from 'client/selection'
 
 type mayWriteCb = ((socket: Socket, cb: (mayWrite: boolean) => void) => void)

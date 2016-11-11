@@ -1,5 +1,5 @@
 // @flow
-import { Editor, EditorChange, Doc } from 'codemirror'
+import type { Editor, EditorChange, Doc } from 'codemirror'
 import TextOperation from 'ot/text-operation'
 import { rangeData } from 'types/data'
 import Selection, { Range } from 'client/selection'
