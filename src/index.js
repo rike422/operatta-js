@@ -6,5 +6,3 @@ export { default as SocketIOClient } from 'client/connector/socketio'
 export { default as Selection } from 'client/selection'
 export { default as Server } from 'server/server'
 export { default as EditorSocketIOServer } from 'server/editor-socketio-server'
-
-
