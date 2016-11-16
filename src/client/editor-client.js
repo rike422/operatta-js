@@ -148,15 +148,16 @@ export default class EditorClient extends Client {
       }
     }
 
-    for (clientId in clients) {
+    Object.keys(clients).forEach((clientId) => {
       if (clients.hasOwnProperty(clientId)) {
+        const client = clients[clientId]
         const clientObject: OtherClient = this.getClientObject(clientId)
-
-        if (clients[clientId].name) {
-          clientObject.setName(clients[clientId].name)
+        if (client.name) {
+          clientObject.setName(client.name)
         }
 
-        const selection = clients[clientId].selection
+        const selection = client.selection
+
         if (selection) {
           this.clients[clientId].updateSelection(
             this.transformSelection(Selection.fromJSON(selection))
@@ -165,7 +166,7 @@ export default class EditorClient extends Client {
           this.clients[clientId].removeSelection()
         }
       }
-    }
+    })
   }
 
   onOtherClientSelectionChange (clientId: string, selection: selectionData): void {

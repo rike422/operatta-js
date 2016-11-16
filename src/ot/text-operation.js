@@ -208,6 +208,7 @@ export default class TextOperation {
     if (this.ops.length !== other.ops.length) {
       return false
     }
+
     for (let i: number = 0; i < this.ops.length; i++) {
       if (this.ops[i] !== other.ops[i]) {
         return false
