@@ -55,7 +55,7 @@ export default class TextOperation {
       if (isInsert(op1)) {
         operation1prime.insert(op1)
         operation2prime.retain(op1.length)
-        op1 = ops1[i1++]
+        op1 = operation1.next()
         continue
       }
 
@@ -146,20 +146,17 @@ export default class TextOperation {
 
   // Converts a plain JS object into an operation and validates it.
   static fromJSON = (ops: Array<any>): TextOperation => {
-    const o: TextOperation = new TextOperation()
-    for (let i: number = 0, l: number = ops.length; i < l; i++) {
-      const op = ops[i]
+    return ops.reduce((operation, op) => {
       if (isRetain(op)) {
-        o.retain(op)
+        return operation.retain(op)
       } else if (isInsert(op)) {
-        o.insert(op)
+        return operation.insert(op)
       } else if (isDelete(op)) {
-        o.delete(op)
+        return operation.delete(op)
       } else {
         throw new Error(`unknown operation: ${JSON.stringify(op)}`)
       }
-    }
-    return o
+    }, new TextOperation())
   }
 
   constructor (): void {
@@ -174,6 +171,10 @@ export default class TextOperation {
     // The targetLength is the length of every string that results from applying
     // the operation on a valid input string.
     this.targetLength = 0
+  }
+
+  [Symbol.iterator] () {
+    return this.ops.values()
   }
 
   delete (n: number): this {
@@ -279,17 +280,7 @@ export default class TextOperation {
 
   // Pretty printing.
   toString (): string {
-    // map: build a new array by applying a function to every element in an old
-    // array.
-    const map: (_: any) => Array<string> = Array.prototype.map || function (fn): Array<string> {
-      const arr: Array<any> = this
-      const newArr: Array<string> = []
-      for (let i: number = 0, l: number = arr.length; i < l; i++) {
-        newArr[i] = fn(arr[i])
-      }
-      return newArr
-    }
-    return map.call(this.ops, (op: number): string => {
+    return this.ops.map((op: number): string => {
       if (isRetain(op)) {
         return `retain ${op}`
       } else if (isInsert(op)) {
@@ -369,12 +360,8 @@ export default class TextOperation {
     }
 
     const operation: TextOperation = new TextOperation() // the combined operation
-    const ops1: Array<any> = operation1.ops // for fast access
-    const ops2: Array<any> = operation2.ops
-    let i1: number = 0 // current index into ops1 respectively ops2
-    let i2: number = 0
-    let op1: any = ops1[i1++] // current ops
-    let op2: any = ops2[i2++]
+    let op1: any = operation1.next() // current ops
+    let op2: any = operation2.next()
     while (true) {
       // Dispatch on the type of op1 and op2
       if (typeof op1 === 'undefined' && typeof op2 === 'undefined') {
@@ -384,13 +371,13 @@ export default class TextOperation {
 
       if (isDelete(op1)) {
         operation.delete(op1)
-        op1 = ops1[i1++]
+        op1 = operation1.next()
         continue
       }
 
       if (isInsert(op2)) {
         operation.insert(op2)
-        op2 = ops2[i2++]
+        op2 = operation2.next()
         continue
       }
 
@@ -405,54 +392,54 @@ export default class TextOperation {
         if (op1 > op2) {
           operation.retain(op2)
           op1 = op1 - op2
-          op2 = ops2[i2++]
+          op2 = operation2.next()
         } else if (op1 === op2) {
           operation.retain(op1)
-          op1 = ops1[i1++]
-          op2 = ops2[i2++]
+          op1 = operation1.next()
+          op2 = operation2.next()
         } else {
           operation.retain(op1)
           op2 = op2 - op1
-          op1 = ops1[i1++]
+          op1 = operation1.next()
         }
       } else if (isInsert(op1) && isDelete(op2)) {
         if (op1.length > -op2) {
           op1 = op1.slice(-op2)
-          op2 = ops2[i2++]
+          op2 = operation2.next()
         } else if (op1.length === -op2) {
-          op1 = ops1[i1++]
-          op2 = ops2[i2++]
+          op1 = operation1.next()
+          op2 = operation2.next()
         } else {
           op2 = op2 + op1.length
-          op1 = ops1[i1++]
+          op1 = operation1.next()
         }
       } else if (isInsert(op1) && isRetain(op2)) {
         if (op1.length > op2) {
           operation.insert(op1.slice(0, op2))
           op1 = op1.slice(op2)
-          op2 = ops2[i2++]
+          op2 = operation2.next()
         } else if (op1.length === op2) {
           operation.insert(op1)
-          op1 = ops1[i1++]
-          op2 = ops2[i2++]
+          op1 = operation1.next()
+          op2 = operation2.next()
         } else {
           operation.insert(op1)
           op2 = op2 - op1.length
-          op1 = ops1[i1++]
+          op1 = operation1.next()
         }
       } else if (isRetain(op1) && isDelete(op2)) {
         if (op1 > -op2) {
           operation.delete(op2)
           op1 = op1 + op2
-          op2 = ops2[i2++]
+          op2 = operation2.next()
         } else if (op1 === -op2) {
           operation.delete(op2)
-          op1 = ops1[i1++]
-          op2 = ops2[i2++]
+          op1 = operation1.next()
+          op2 = operation2.next()
         } else {
           operation.delete(op1)
           op2 = op2 + op1
-          op1 = ops1[i1++]
+          op1 = operation1.next()
         }
       } else {
         throw new Error(
