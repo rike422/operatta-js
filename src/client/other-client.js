@@ -31,8 +31,6 @@ import Adapter from 'client/adapters/adapter'
 export default class OtherClient {
   id: string
   name: ?string
-  listEl: any
-  li: any
   editorAdapter: Adapter
   hue: number
   color: string
@@ -40,19 +38,13 @@ export default class OtherClient {
   mark: ?{ clear: () => void }
   selection: ?Selection
 
-  constructor (id: string, listEl: any, editorAdapter: Adapter, name: ?string, selection: ?Selection): void {
+  constructor (id: string, editorAdapter: Adapter, name: ?string, selection: ?Selection): void {
     this.id = id
-    this.listEl = listEl
     this.editorAdapter = editorAdapter
     this.name = name
 
-    this.li = document.createElement('li')
-    if (name) {
-      this.li.textContent = name
-      this.listEl.appendChild(this.li)
-    }
-
     this.setColor(name ? hueFromName(name) : Math.random())
+
     if (selection) {
       this.updateSelection(selection)
     }
@@ -62,9 +54,6 @@ export default class OtherClient {
     this.hue = hue
     this.color = hsl2hex(hue, 0.75, 0.5)
     this.lightColor = hsl2hex(hue, 0.5, 0.9)
-    if (this.li) {
-      this.li.style.color = this.color
-    }
   }
 
   setName (name: string): void {
@@ -72,12 +61,6 @@ export default class OtherClient {
       return
     }
     this.name = name
-
-    this.li.textContent = name
-    if (!this.li.parentNode) {
-      this.listEl.appendChild(this.li)
-    }
-
     this.setColor(hueFromName(name))
   }
 
@@ -93,9 +76,6 @@ export default class OtherClient {
   }
 
   remove (): void {
-    if (this.li) {
-      removeElement(this.li)
-    }
     this.removeSelection()
   }
 
@@ -104,12 +84,5 @@ export default class OtherClient {
       this.mark.clear()
       this.mark = undefined
     }
-  }
-}
-
-// Remove an element from the DOM.
-function removeElement (el): void {
-  if (el.parentNode) {
-    el.parentNode.removeChild(el)
   }
 }

@@ -16,7 +16,6 @@ export default class EditorClient extends Client {
   serverAdapter: Connector
   editorAdapter: Adapter
   undoManager: UndoManager
-  clientListEl: Array<any>
   clients: { [key: string]: clientData }
   selection: ?Selection
 
@@ -26,7 +25,6 @@ export default class EditorClient extends Client {
     this.editorAdapter = editorAdapter
     this.undoManager = new UndoManager()
 
-    this.initializeClientList()
     this.initializeClients(clients)
 
     const self: EditorClient = this
@@ -53,7 +51,6 @@ export default class EditorClient extends Client {
   addClient (clientId: string, clientObj: clientData): void {
     this.clients[clientId] = new OtherClient(
       clientId,
-      this.clientListEl,
       this.editorAdapter,
       clientObj.name || clientId,
       clientObj.selection ? Selection.fromJSON(clientObj.selection) : null
@@ -77,7 +74,6 @@ export default class EditorClient extends Client {
 
     const newClient: OtherClient = new OtherClient(
       clientId,
-      this.clientListEl,
       this.editorAdapter
     )
     this.clients[clientId] = newClient
@@ -92,10 +88,6 @@ export default class EditorClient extends Client {
     }
     client.remove()
     delete this.clients[clientId]
-  }
-
-  initializeClientList (): void {
-    this.clientListEl = window.document.createElement('ul')
   }
 
   applyUnredo (operation: WrappedOperation): void {

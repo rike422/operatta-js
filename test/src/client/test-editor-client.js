@@ -145,29 +145,21 @@ test('simulated editing session', (t) => {
 
 test('user handling', (t) => {
   const editorClient = t.context.editorClient
-  const clientListEl = editorClient.clientListEl
   const editorAdapter = t.context.editorAdapter
   const serverAdapter = t.context.serverAdapter
-
-  t.deepEqual(clientListEl.childNodes.length, 2)
-  const firstLi = clientListEl.childNodes[0]
-  const secondLi = clientListEl.childNodes[1]
-  t.deepEqual(firstLi.tagName.toLowerCase(), 'li')
-  t.deepEqual(firstLi.innerHTML, 'Tim')
-  t.deepEqual(secondLi.tagName.toLowerCase(), 'li')
-  t.deepEqual(secondLi.innerHTML, 'Jan')
-  t.notDeepEqual(firstLi.style.color, secondLi.style.color)
 
   const mockClient1 = {
     clientId: 'enihcam',
     color: editorAdapter.otherSelections[0].color,
     selection: new Selection([new Range(0, 0), new Range(2, 4)])
   }
+
   const mockClient2 = {
     clientId: 'baia',
     color: editorAdapter.otherSelections[1].color,
     selection: new Selection([new Range(6, 7)])
   }
+
   t.deepEqual(editorAdapter.otherSelections, [
     mockClient1, mockClient2
   ])
@@ -197,16 +189,14 @@ test('user handling', (t) => {
   ])
 
   // Tim closes his browser
-  t.deepEqual(clientListEl.childNodes.length, 2)
+  t.deepEqual(Object.keys(editorClient.clients).length, 2)
   serverAdapter.trigger('client_left', 'enihcam')
-  t.deepEqual(clientListEl.childNodes.length, 1)
-  t.truthy(!firstLi.parentNode)
-  t.deepEqual(secondLi.parentNode, clientListEl)
+  t.deepEqual(Object.keys(editorClient.clients).length, 1)
 
   // A new user joins!
   serverAdapter.trigger('set_name', 'emit-remmus', 'Nina')
-  t.deepEqual(clientListEl.childNodes.length, 2)
-  t.deepEqual(clientListEl.childNodes[1].innerHTML, 'Nina')
+  t.deepEqual(Object.keys(editorClient.clients).length, 2)
+  t.deepEqual(editorClient.clients['emit-remmus'].name, 'Nina')
 
   // We get an update consisting of the state of all connected users:
   // Tim rejoined, Jan left, Nina updated her cursor
@@ -214,9 +204,10 @@ test('user handling', (t) => {
     'enihcam': { name: 'Tim', selection: null },
     'emit-remmus': { name: 'Nina', selection: { ranges: [{ anchor: 0, head: 0 }] } }
   })
-  t.deepEqual(clientListEl.childNodes.length, 2)
-  t.deepEqual(clientListEl.childNodes[0].innerHTML, 'Nina')
-  t.deepEqual(clientListEl.childNodes[1].innerHTML, 'Tim')
+
+  t.deepEqual(Object.keys(editorClient.clients).length, 2)
+  t.deepEqual(editorClient.clients['emit-remmus'].name, 'Nina')
+  t.deepEqual(editorClient.clients['enihcam'].name, 'Tim')
   t.deepEqual(editorAdapter.otherSelections, [
     {
       clientId: 'emit-remmus',
