@@ -147,8 +147,8 @@ export default class TextOperation {
   // Converts a plain JS object into an operation and validates it.
   static fromJSON = (ops: Array<any>): TextOperation => {
     const o: TextOperation = new TextOperation()
-    for (let i: number = 0, l: number = ops.length; i < l; i++) {
-      const op = ops[i]
+    ops.forEach((op) => {
+      console.log(`operation ${op}`)
       if (isRetain(op)) {
         o.retain(op)
       } else if (isInsert(op)) {
@@ -158,7 +158,7 @@ export default class TextOperation {
       } else {
         throw new Error(`unknown operation: ${JSON.stringify(op)}`)
       }
-    }
+    })
     return o
   }
 
