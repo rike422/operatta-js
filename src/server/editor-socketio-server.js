@@ -33,19 +33,19 @@ class EditorSocketIOServer extends Server {
       })
       .on('operation', (revision: revisionData, operation: Array<any>, selection: Selection): void => {
         self.mayWrite(socket, (mayWrite: boolean): void => {
-          if (!mayWrite) {
-            console.log("User doesn't have the right to edit.")
-            return
-          }
+          // if (!mayWrite) {
+          //   console.log("User doesn't have the right to edit.")
+          //   return
+          // }
           self.onOperation(socket, revision, operation, selection)
         })
       })
       .on('selection', (obj): void => {
         self.mayWrite(socket, (mayWrite: boolean): void => {
-          if (!mayWrite) {
-            console.log("User doesn't have the right to edit.")
-            return
-          }
+          // if (!mayWrite) {
+          //   console.log("User doesn't have the right to edit.")
+          //   return
+          // }
           self.updateSelection(socket, obj && Selection.fromJSON(obj))
         })
       })
