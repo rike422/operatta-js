@@ -65,7 +65,7 @@ export default class Selection {
   // Convenience method for creating selections only containing a single cursor
   // and no real selection range.
   static createCursor = (position: ?number): Selection => {
-    if(position == null) {
+    if (position == null) {
       return new Selection([])
     }
     return new Selection([new Range(position, position)])
