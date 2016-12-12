@@ -6,23 +6,23 @@ import Server from './server'
 import { revisionData } from 'types/data'
 import Selection from 'client/selection'
 
-type mayWriteCb = ((socket: Socket, cb: (mayWrite: boolean) => void) => void)
+type mayWriteCb = ((socket: Socket, cb: (mayWrite: boolean) => void) => void);
 
 class EditorSocketIOServer extends Server {
   users: {}
   docId: string
   mayWrite: mayWriteCb
 
-  constructor (document: string, operations: Array<any>, docId: string, mayWrite: mayWriteCb): void {
+  constructor (document: string, operations: Array<any>, docId: string, mayWrite: mayWriteCb) {
     super(document, operations)
     this.users = {}
     this.docId = docId
-    this.mayWrite = mayWrite || ((_: any, cb): void => {
+    this.mayWrite = mayWrite || ((_: any, cb) => {
       cb(true)
     })
   }
 
-  addClient (socket: Socket): void {
+  addClient (socket: Socket) {
     const self: EditorSocketIOServer = this
     socket
       .join(this.docId)
@@ -31,8 +31,8 @@ class EditorSocketIOServer extends Server {
         revision: this.operations.length,
         clients: this.users
       })
-      .on('operation', (revision: revisionData, operation: Array<any>, selection: Selection): void => {
-        self.mayWrite(socket, (mayWrite: boolean): void => {
+      .on('operation', (revision: revisionData, operation: Array<any>, selection: Selection) => {
+        self.mayWrite(socket, (mayWrite: boolean) => {
           // if (!mayWrite) {
           //   console.log("User doesn't have the right to edit.")
           //   return
@@ -40,8 +40,8 @@ class EditorSocketIOServer extends Server {
           self.onOperation(socket, revision, operation, selection)
         })
       })
-      .on('selection', (obj): void => {
-        self.mayWrite(socket, (mayWrite: boolean): void => {
+      .on('selection', (obj) => {
+        self.mayWrite(socket, (mayWrite: boolean) => {
           // if (!mayWrite) {
           //   console.log("User doesn't have the right to edit.")
           //   return
@@ -49,7 +49,7 @@ class EditorSocketIOServer extends Server {
           self.updateSelection(socket, obj && Selection.fromJSON(obj))
         })
       })
-      .on('disconnect', (): void => {
+      .on('disconnect', () => {
         console.log('Disconnect')
         socket.leave(self.docId)
         self.onDisconnect(socket)
@@ -61,7 +61,7 @@ class EditorSocketIOServer extends Server {
       })
   }
 
-  onOperation (socket: Socket, revision: revisionData, operation: Array<any>, selection: Selection): void {
+  onOperation (socket: Socket, revision: revisionData, operation: Array<any>, selection: Selection) {
     let wrapped
     try {
       wrapped = new WrappedOperation(
@@ -88,7 +88,7 @@ class EditorSocketIOServer extends Server {
     }
   }
 
-  updateSelection (socket: Socket, selection: Selection): void {
+  updateSelection (socket: Socket, selection: Selection) {
     const clientId = socket.id
     if (selection) {
       this.getClient(clientId).selection = selection
@@ -98,7 +98,7 @@ class EditorSocketIOServer extends Server {
     socket.broadcast.in(this.docId).emit('selection', clientId, selection)
   }
 
-  setName (socket: Socket, name: string): void {
+  setName (socket: Socket, name: string) {
     const clientId = socket.id
     this.getClient(clientId).name = name
     socket.broadcast.in(this.docId).emit('set_name', clientId, name)
@@ -108,7 +108,7 @@ class EditorSocketIOServer extends Server {
     return this.users[clientId] || (this.users[clientId] = {})
   }
 
-  onDisconnect (socket: Socket): void {
+  onDisconnect (socket: Socket) {
     const clientId = socket.id
     delete this.users[clientId]
     socket.broadcast.in(this.docId).emit('client_left', clientId)

@@ -6,24 +6,24 @@ import TextOperation from 'ot/text-operation'
 export default class State {
   client: Client;
 
-  constructor (client: Client): void {
+  constructor (client: Client) {
     this.client = client
   }
 
-  transition (nextState: State): void {
+  transition (nextState: State) {
     this.client.setState(nextState)
   }
 
-  serverAck (): void {
+  serverAck () {
   }
 
-  resend (client: Client): void {
+  resend (client: Client) {
   }
 
-  applyServer (operation: TextOperation): void {
+  applyServer (operation: TextOperation) {
   }
 
-  applyClient (operation: TextOperation): void {
+  applyClient (operation: TextOperation) {
   }
 
   transformSelection (x: Selection): Selection { return x }

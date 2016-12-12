@@ -9,32 +9,32 @@ export default class Client {
   revision: number;
   state: State;
 
-  constructor (revision: number): void {
+  constructor (revision: number) {
     this.revision = revision // the next expected revision number
     this.state = new Synchronized(this) // start state
   }
 
-  setState (state: State): void {
+  setState (state: State) {
     this.state = state
   }
 
   // Call this method when the user changes the document.
-  applyClient (operation: TextOperation): void {
+  applyClient (operation: TextOperation) {
     this.state.applyClient(operation)
   }
 
   // Call this method with a new operation from the server
-  applyServer (operation: TextOperation): void {
+  applyServer (operation: TextOperation) {
     this.revision++
     this.state.applyServer(operation)
   }
 
-  serverAck (): void {
+  serverAck () {
     this.revision++
     this.state.serverAck()
   }
 
-  serverReconnect (): void {
+  serverReconnect () {
     if (typeof this.state.resend === 'function') {
       this.state.resend(this)
     }

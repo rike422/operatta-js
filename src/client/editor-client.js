@@ -17,13 +17,14 @@ export default class EditorClient extends Client {
   editorAdapter: Adapter
   undoManager: UndoManager
   clients: { [key: string]: clientData }
-  selection: ?Selection
+  selection: Selection
 
-  constructor (revision: revisionData, clients: { [key: string]:clientData }, serverAdapter: Connector, editorAdapter: Adapter): void {
+  constructor (revision: revisionData, clients: { [key: string]: clientData }, serverAdapter: Connector, editorAdapter: Adapter) {
     super(revision)
     this.serverAdapter = serverAdapter
     this.editorAdapter = editorAdapter
     this.undoManager = new UndoManager()
+    this.selection = Selection.createCursor()
 
     this.initializeClients(clients)
 
@@ -32,11 +33,11 @@ export default class EditorClient extends Client {
     this.editorAdapter.onSelectionChange(this.onSelectionChange.bind(this))
     this.editorAdapter.onBlur(this.onBlur.bind(this))
 
-    this.editorAdapter.registerUndo((): void => {
+    this.editorAdapter.registerUndo(() => {
       self.undo()
     })
 
-    this.editorAdapter.registerRedo((): void => {
+    this.editorAdapter.registerRedo(() => {
       self.redo()
     })
     this.serverAdapter.onAck(this.serverAck.bind(this))
@@ -48,7 +49,7 @@ export default class EditorClient extends Client {
     this.serverAdapter.onReconnect(this.onReconnect.bind(this))
   }
 
-  addClient (clientId: string, clientObj: clientData): void {
+  addClient (clientId: string, clientObj: clientData) {
     this.clients[clientId] = new OtherClient(
       clientId,
       this.editorAdapter,
@@ -57,7 +58,7 @@ export default class EditorClient extends Client {
     )
   }
 
-  initializeClients (clients: { [key: string]:clientData }): void {
+  initializeClients (clients: { [key: string]: clientData }) {
     this.clients = {}
     for (const clientId: string in clients) {
       if (clients.hasOwnProperty(clientId)) {
@@ -80,7 +81,7 @@ export default class EditorClient extends Client {
     return newClient
   }
 
-  onClientLeft (clientId: string): void {
+  onClientLeft (clientId: string) {
     console.log(`User disconnected: ${clientId}`)
     const client = this.clients[clientId]
     if (!client) {
@@ -90,33 +91,35 @@ export default class EditorClient extends Client {
     delete this.clients[clientId]
   }
 
-  applyUnredo (operation: WrappedOperation): void {
+  applyUnredo (operation: WrappedOperation) {
     this.undoManager.add(operation.invert(this.editorAdapter.getValue()))
     this.editorAdapter.applyOperation(operation.wrapped)
-    this.selection = operation.meta.selectionAfter
+    if (operation.meta != null) {
+      this.selection = operation.meta.selectionAfter
+    }
     this.editorAdapter.setSelection(this.selection)
     this.applyClient(operation.wrapped)
   }
 
-  undo (): void {
+  undo () {
     if (!this.undoManager.canUndo()) {
       return void 0
     }
-    this.undoManager.performUndo((o): void => {
+    this.undoManager.performUndo((o) => {
       this.applyUnredo(o)
     })
   }
 
-  redo (): void {
+  redo () {
     if (!this.undoManager.canRedo()) {
       return
     }
-    this.undoManager.performRedo((o: WrappedOperation): void => {
+    this.undoManager.performRedo((o: WrappedOperation) => {
       this.applyUnredo(o)
     })
   }
 
-  onChange (textOperation: TextOperation, inverse: TextOperation): void {
+  onChange (textOperation: TextOperation, inverse: TextOperation) {
     const selectionBefore = this.selection
     this.updateSelection()
     const undoStack = this.undoManager.undoStack
@@ -128,19 +131,19 @@ export default class EditorClient extends Client {
     this.applyClient(textOperation)
   }
 
-  onSetName (clientId: string, name: string): void {
+  onSetName (clientId: string, name: string) {
     this.getClientObject(clientId).setName(name)
   }
 
-  onRecieveOperation (operation: Array<any>): void {
+  onRecieveOperation (operation: Array<any>) {
     this.applyServer(TextOperation.fromJSON(operation))
   }
 
-  updateSelection (): void {
+  updateSelection () {
     this.selection = this.editorAdapter.getSelection()
   }
 
-  onUpdateClients (clients: {[key: string]: clientData}): void {
+  onUpdateClients (clients: {[key: string]: clientData}) {
     let clientId: string
     for (clientId in this.clients) {
       if (this.clients.hasOwnProperty(clientId) && !clients.hasOwnProperty(clientId)) {
@@ -169,7 +172,7 @@ export default class EditorClient extends Client {
     })
   }
 
-  onOtherClientSelectionChange (clientId: string, selection: selectionData): void {
+  onOtherClientSelectionChange (clientId: string, selection: selectionData) {
     if (selection) {
       this.getClientObject(clientId).updateSelection(
         this.transformSelection(Selection.fromJSON(selection))
@@ -179,39 +182,39 @@ export default class EditorClient extends Client {
     }
   }
 
-  onSelectionChange (): void {
-    const oldSelection: ?Selection = this.selection
+  onSelectionChange () {
+    const oldSelection: Selection = this.selection
     this.updateSelection()
-    if (oldSelection && this.selection != null && this.selection.equals(oldSelection)) {
+    if (this.selection.equals(oldSelection)) {
       return
     }
     this.sendSelection(this.selection)
   }
 
-  onReconnect (): void {
+  onReconnect () {
     this.serverReconnect()
   }
 
-  onBlur (): void {
-    this.selection = null
-    this.sendSelection(null)
+  onBlur () {
+    this.selection = Selection.createCursor()
+    this.sendSelection(Selection.createCursor())
   }
 
-  sendSelection (selection: selectionData): void {
+  sendSelection (selection: selectionData) {
     if (this.state instanceof AwaitingWithBuffer) {
       return
     }
     this.serverAdapter.sendSelection(selection)
   }
 
-  sendOperation (revision: number, operation: TextOperation): void {
+  sendOperation (revision: number, operation: TextOperation) {
     this.serverAdapter.sendOperation(revision, operation.toJSON(), this.selection)
   }
 
-  applyOperation (operation: TextOperation): void {
+  applyOperation (operation: TextOperation) {
     this.editorAdapter.applyOperation(operation)
     this.updateSelection()
-    this.undoManager.transform(new WrappedOperation(operation, null))
+    this.undoManager.transform(new WrappedOperation(operation, undefined))
   }
 }
 

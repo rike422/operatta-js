@@ -12,23 +12,23 @@ class EventAdaptor {
   cm: Editor
   listners: { [key: string]: callback };
 
-  constructor (cm): void {
+  constructor (cm) {
     this.cm = cm
     this.listners = {}
   }
 
-  on (type: string, fn: any): void {
+  on (type: string, fn: any) {
     this.listners[type] = fn
     this.cm.on(type, fn)
   }
 
-  off (type: string): void {
+  off (type: string) {
     const fn: () => void = this.listners[type]
     this.cm.off(type, fn)
   }
 
-  detach (): void {
-    Object.keys(this.listners).forEach((key: string): void => {
+  detach () {
+    Object.keys(this.listners).forEach((key: string) => {
       this.off(key)
     })
   }
@@ -137,8 +137,8 @@ export default class CodeMirrorAdapter extends EditorAdapter {
   static operationFromCodeMirrorChanges = operationFromCodeMirrorChanges
 
   // Apply an operation to a CodeMirror instance.
-  static applyOperationToCodeMirror = (operation: TextOperation, cm: Doc): void => {
-    cm.operation((): void => {
+  static applyOperationToCodeMirror = (operation: TextOperation, cm: Doc) => {
+    cm.operation(() => {
       const ops = operation.ops
       let index: number = 0 // holds the current index into CodeMirror's content
       for (let i: number = 0, l = ops.length; i < l; i++) {
@@ -160,7 +160,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
   // Singular form for backwards compatibility.
   static operationFromCodeMirrorChange = operationFromCodeMirrorChanges
 
-  constructor (cm: Doc): void {
+  constructor (cm: Doc) {
     super()
     this.cm = cm
     this.ignoreNextChange = false
@@ -176,7 +176,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
   }
 
   // Removes all event listeners from the CodeMirror instance.
-  detach (): void {
+  detach () {
     this.events.detach()
   }
 
@@ -199,7 +199,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
     return new Selection(ranges)
   }
 
-  setSelection (selection: Selection): void {
+  setSelection (selection: Selection) {
     const ranges = []
     for (let i: number = 0; i < selection.ranges.length; i++) {
       const range: Range = selection.ranges[i]
@@ -258,7 +258,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
       }
     }
     return {
-      clear (): void {
+      clear () {
         for (let i: number = 0; i < selectionObjects.length; i++) {
           selectionObjects[i].clear()
         }
@@ -266,28 +266,28 @@ export default class CodeMirrorAdapter extends EditorAdapter {
     }
   }
 
-  applyOperation (operation: TextOperation): void {
+  applyOperation (operation: TextOperation) {
     if (!operation.isNoop()) {
       this.ignoreNextChange = true
     }
     CodeMirrorAdapter.applyOperationToCodeMirror(operation, this.cm)
   }
 
-  registerUndo (undoFn: () => void): void {
+  registerUndo (undoFn: () => void) {
     this.cm.undo = undoFn
   }
 
-  registerRedo (redoFn: () => void): void {
+  registerRedo (redoFn: () => void) {
     this.cm.redo = redoFn
   }
 
-  _onBlur (): void {
+  _onBlur () {
     if (!this.cm.somethingSelected()) {
       this.trigger('blur')
     }
   }
 
-  _onFocus (): void {
+  _onFocus () {
     if (this.changeInProgress) {
       this.selectionChanged = true
     } else {
@@ -295,7 +295,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
     }
   }
 
-  _onChange (): void {
+  _onChange () {
     // By default, CodeMirror's event order is the following:
     // 1. 'change', 2. 'cursorActivity', 3. 'changes'.
     // We want to fire the 'selectionChange' event after the 'change' event,
@@ -305,7 +305,7 @@ export default class CodeMirrorAdapter extends EditorAdapter {
     this.changeInProgress = true
   }
 
-  _onChanges (_: any, changes: Array<EditorChange>): void {
+  _onChanges (_: any, changes: Array<EditorChange>) {
     if (!this.ignoreNextChange) {
       const pair = CodeMirrorAdapter.operationFromCodeMirrorChanges(changes, this.cm)
       this.trigger('change', pair[0], pair[1])
@@ -361,7 +361,7 @@ function codemirrorDocLength (doc: Doc): number {
 //   document.documentElement.getElementsByTagName('head')[0].appendChild(styleElement)
 //   const styleSheet: ?CSSStyleSheet = styleElement.sheet
 //
-//   return (css: string): void => {
+//   return (css: string) => {
 //     if (added[css]) {
 //       return
 //     }

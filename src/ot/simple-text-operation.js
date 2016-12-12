@@ -6,7 +6,7 @@ class Insert {
   str: string
   position: number
 
-  constructor (str: string, position: number): void {
+  constructor (str: string, position: number) {
     this.str = str
     this.position = position
   }
@@ -31,7 +31,7 @@ class Delete {
   count: number
   position: number
 
-  constructor (count: number, position: number): void {
+  constructor (count: number, position: number) {
     this.count = count
     this.position = position
   }
@@ -75,12 +75,12 @@ export default class SimpleTextOperation {
   static Delete = Delete
   static Noop = Noop
 
-  static transform = (a, b): [Insert| Noop | Delete, Insert | Noop | Delete] => {
+  static transform = (a, b): [Insert | Noop | Delete, Insert | Noop | Delete] => {
     if (a.equals(b)) {
       return [a, b]
     }
 
-    const offsetInsertAndDelete = (a: Insert, b: Delete): [Insert| Noop | Delete, Insert | Noop | Delete] => {
+    const offsetInsertAndDelete = (a: Insert, b: Delete): [Insert | Noop | Delete, Insert | Noop | Delete] => {
       if (a.position <= b.position) {
         return [a, new Delete(b.count, b.position + a.str.length)]
       }

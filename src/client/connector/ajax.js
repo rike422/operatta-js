@@ -10,7 +10,7 @@ export default class AjaxAdapter extends Connector {
   majorRevision: number
   minorRevision: number
 
-  constructor (path: string, ownUserName: string, revision: revsionData): void {
+  constructor (path: string, ownUserName: string, revision: revsionData) {
     super()
     if (path[path.length - 1] !== '/') {
       path += '/'
@@ -26,7 +26,7 @@ export default class AjaxAdapter extends Connector {
     return `revision/${this.majorRevision}-${this.minorRevision}`
   }
 
-  handleResponse (data: xhrData): void {
+  handleResponse (data: xhrData) {
     let i: number
     const operations: Array<any> = data.operations
     for (i = 0; i < operations.length; i++) {
@@ -76,24 +76,24 @@ export default class AjaxAdapter extends Connector {
     }
   }
 
-  poll (): void {
+  poll () {
     const url: string = this.path + this.renderRevisionPath()
     fetch(url, {
       headers: {
         contentType: 'application/json'
       },
       timeout: 5000
-    }).then((data): void => {
+    }).then((data) => {
       this.handleResponse(data.json())
       this.poll()
-    }).catch((e): void => {
-      setTimeout((): void => {
+    }).catch((e) => {
+      setTimeout(() => {
         this.poll()
       }, 500)
     })
   }
 
-  sendOperation (revision: number, operation: Array<any>, selection: Selection): void {
+  sendOperation (revision: number, operation: Array<any>, selection: Selection) {
     if (revision !== this.majorRevision) {
       throw new Error('Revision numbers out of sync')
     }
@@ -105,14 +105,14 @@ export default class AjaxAdapter extends Connector {
       headers: {
         contentType: 'application/json'
       }
-    }).catch((e): void => {
-      setTimeout((): void => {
+    }).catch((e) => {
+      setTimeout(() => {
         this.sendOperation(revision, operation, selection)
       }, 500)
     })
   }
 
-  sendSelection (obj: any): void {
+  sendSelection (obj: any) {
     const url: string = `${this.path + this.renderRevisionPath()}/selection`
     fetch(url, {
       method: 'POST',

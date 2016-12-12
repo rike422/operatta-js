@@ -5,19 +5,19 @@ import TextOperation from 'ot/text-operation'
 
 export default class EditorAdaptor extends Eventable {
 
-  applyOperation (operation: TextOperation): void {
+  applyOperation (operation: TextOperation) {
     throw new Error('getValue must be defined in child class')
   }
 
-  onChange (fn: (textOperation: TextOperation, inverse: TextOperation) => void): void {
+  onChange (fn: (textOperation: TextOperation, inverse: TextOperation) => void) {
     this.on('change', fn)
   }
 
-  onSelectionChange (fn: () => void): void {
+  onSelectionChange (fn: () => void) {
     this.on('selectionChange', fn)
   }
 
-  onBlur (fn: () => void): void {
+  onBlur (fn: () => void) {
     this.on('blur', fn)
   }
 
@@ -25,11 +25,11 @@ export default class EditorAdaptor extends Eventable {
     throw new Error('getValue must be defined in child class')
   }
 
-  registerUndo (undoFn: () => void): void {
+  registerUndo (undoFn: () => void) {
     throw new Error('registerUndo must be defined in child class')
   }
 
-  registerRedo (redoFn: () => void): void {
+  registerRedo (redoFn: () => void) {
     throw new Error('registerRedo must be defined in child class')
   }
 
@@ -37,7 +37,7 @@ export default class EditorAdaptor extends Eventable {
     throw new Error('getSelection must be defined in child class')
   }
 
-  setSelection (selection: Selection): void {
+  setSelection (selection: Selection) {
     throw new Error('setSelection must be defined in child class')
   }
 

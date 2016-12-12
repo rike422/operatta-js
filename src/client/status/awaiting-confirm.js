@@ -11,19 +11,19 @@ import TextOperation from 'ot/text-operation'
 export default class AwaitingConfirm extends State {
   outstanding: any
 
-  constructor (client: Client, outstanding: any): void {
+  constructor (client: Client, outstanding: any) {
     super(client)
     // Save the pending operation
     this.outstanding = outstanding
   }
 
-  applyClient (operation: TextOperation): void {
+  applyClient (operation: TextOperation) {
     // When the user makes an edit, don't send the operation immediately,
     // instead switch to 'AwaitingWithBuffer' state
     this.transition(new AwaitingWithBuffer(this.client, this.outstanding, operation))
   }
 
-  applyServer (operation: TextOperation): void {
+  applyServer (operation: TextOperation) {
     // This is another client's operation. Visualization:
     //
     //                   /\
@@ -43,13 +43,13 @@ export default class AwaitingConfirm extends State {
     return selection.transform(this.outstanding)
   }
 
-  resend (client: Client): void {
+  resend (client: Client) {
     // The confirm didn't come because the client was disconnected.
     // Now that it has reconnected, we resend the outstanding operation.
     client.sendOperation(client.revision, this.outstanding)
   }
 
-  serverAck (): void {
+  serverAck () {
     // The client's operation has been acknowledged
     // => switch to synchronized state
     this.transition(new Synchronized(this.client))

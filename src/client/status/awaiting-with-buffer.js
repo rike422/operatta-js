@@ -12,20 +12,20 @@ export default class AwaitingWithBuffer extends State {
   buffer: TextOperation;
   client: Client;
 
-  constructor (client: Client, outstanding: TextOperation, buffer: TextOperation): void {
+  constructor (client: Client, outstanding: TextOperation, buffer: TextOperation) {
     super(client)
     // Save the pending operation and the user's edits since then
     this.outstanding = outstanding
     this.buffer = buffer
   }
 
-  applyClient (operation: TextOperation): void {
+  applyClient (operation: TextOperation) {
     // Compose the user's changes onto the buffer
     const newBuffer = this.buffer.compose(operation)
     this.transition(new AwaitingWithBuffer(this.client, this.outstanding, newBuffer))
   }
 
-  applyServer (operation: TextOperation): void {
+  applyServer (operation: TextOperation) {
     // Operation comes from another client
     //
     //                       /\
@@ -50,7 +50,7 @@ export default class AwaitingWithBuffer extends State {
     this.transition(new AwaitingWithBuffer(this.client, pair1[0], pair2[0]))
   }
 
-  serverAck (): void {
+  serverAck () {
     // The pending operation has been acknowledged
     // => send buffer
     const client = this.client
@@ -62,7 +62,7 @@ export default class AwaitingWithBuffer extends State {
     return selection.transform(this.outstanding).transform(this.buffer)
   }
 
-  resend (): void {
+  resend () {
     // The confirm didn't come because the client was disconnected.
     // Now that it has reconnected, we resend the outstanding operation.
     this.client.sendOperation(this.client.revision, this.outstanding)

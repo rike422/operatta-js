@@ -15,7 +15,7 @@ import Adapter from 'client/adapters/adapter'
 //     )
 //   }
 //
-//   constructor (clientId: string, selection: Selection): void {
+//   constructor (clientId: string, selection: Selection) {
 //     this.clientId = clientId
 //     this.selection = selection
 //   }
@@ -38,7 +38,7 @@ export default class OtherClient {
   mark: ?{ clear: () => void }
   selection: ?Selection
 
-  constructor (id: string, editorAdapter: Adapter, name: ?string, selection: ?Selection): void {
+  constructor (id: string, editorAdapter: Adapter, name: ?string, selection: ?Selection) {
     this.id = id
     this.editorAdapter = editorAdapter
     this.name = name
@@ -50,13 +50,13 @@ export default class OtherClient {
     }
   }
 
-  setColor (hue: number): void {
+  setColor (hue: number) {
     this.hue = hue
     this.color = hsl2hex(hue, 0.75, 0.5)
     this.lightColor = hsl2hex(hue, 0.5, 0.9)
   }
 
-  setName (name: string): void {
+  setName (name: string) {
     if (this.name === name) {
       return
     }
@@ -64,7 +64,7 @@ export default class OtherClient {
     this.setColor(hueFromName(name))
   }
 
-  updateSelection (selection: Selection): void {
+  updateSelection (selection: Selection) {
     this.removeSelection()
     this.selection = selection
     this.mark = this.editorAdapter.setOtherSelection(
@@ -75,11 +75,11 @@ export default class OtherClient {
     )
   }
 
-  remove (): void {
+  remove () {
     this.removeSelection()
   }
 
-  removeSelection (): void {
+  removeSelection () {
     if (this.mark) {
       this.mark.clear()
       this.mark = undefined

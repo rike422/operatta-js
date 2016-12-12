@@ -1,13 +1,14 @@
 // @flow
+
 import TextOperation from './text-operation'
 import SelfMeta from 'client/self-meta'
 
 export default class WrappedOperation {
 
   wrapped: TextOperation
-  meta: SelfMeta
+  meta: ?SelfMeta
 
-  static transform = (a, b): [WrappedOperation, WrappedOperation] => {
+  static transform = (a: WrappedOperation, b: WrappedOperation): [WrappedOperation, WrappedOperation] => {
     const transform = a.wrapped.constructor.transform
     const pair = transform(a.wrapped, b.wrapped)
     return [
@@ -16,12 +17,12 @@ export default class WrappedOperation {
     ]
   }
 
-  constructor (operation: TextOperation, meta: SelfMeta): void {
+  constructor (operation: TextOperation, meta: ?SelfMeta) {
     this.wrapped = operation
     this.meta = meta
   }
 
-  apply () {
+  apply (): string {
     return this.wrapped.apply(...arguments)
   }
 
@@ -43,29 +44,17 @@ export default class WrappedOperation {
   }
 }
 
-// Copy all properties from source to target.
-function copy (source, target: {}): void {
-  for (const key: string in source) {
-    if (source.hasOwnProperty(key)) {
-      target[key] = source[key]
-    }
-  }
-}
-
-function composeMeta (a, b): {} {
+function composeMeta (a: SelfMeta, b: SelfMeta): {} {
   if (a && typeof a === 'object') {
     if (typeof a.compose === 'function') {
       return a.compose(b)
     }
-    const meta: {} = {}
-    copy(a, meta)
-    copy(b, meta)
-    return meta
+    return Object.assign({}, a, b)
   }
   return b
 }
 
-function transformMeta (meta, operation) {
+function transformMeta (meta: ?SelfMeta, operation: TextOperation): SelfMeta {
   if (meta && typeof meta === 'object') {
     if (typeof meta.transform === 'function') {
       return meta.transform(operation)

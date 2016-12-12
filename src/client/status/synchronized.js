@@ -10,13 +10,13 @@ import TextOperation from 'ot/text-operation'
 export default class Synchronized extends State {
   client: Client
 
-  applyServer (operation: TextOperation): void {
+  applyServer (operation: TextOperation) {
     // When we receive a new operation from the server, the operation can be
     // simply applied to the current document
     this.client.applyOperation(operation)
   }
 
-  applyClient (operation: TextOperation): void {
+  applyClient (operation: TextOperation) {
     // When the user makes an edit, send the operation to the server and
     // switch to the 'AwaitingConfirm' state
     const client = this.client
@@ -24,7 +24,7 @@ export default class Synchronized extends State {
     this.transition(new AwaitingConfirm(this.client, operation))
   }
 
-  serverAck (): void {
+  serverAck () {
     throw new Error('There is no pending operation.')
   }
 

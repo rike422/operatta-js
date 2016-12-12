@@ -3,6 +3,8 @@ languages:
 engines:
   eslint:
     enabled: true
+    channel: "eslint-3"
+    version: 3
     config:
       config: .eslintrc.yaml
   duplication:

@@ -63,7 +63,7 @@ export default class EditorAdapterMock extends EditorAdapter {
   applyOperation (operation) {
     this.lastAppliedOperation = operation
     this.value = operation.apply(this.value)
-    if (this.selection) {
+    if (this.selection.ranges.length != 0) {
       const newSelection = this.selection.transform(operation)
       if (!this.selection.equals(newSelection)) {
         this.selection = newSelection
