@@ -64,7 +64,10 @@ export default class Selection {
 
   // Convenience method for creating selections only containing a single cursor
   // and no real selection range.
-  static createCursor = (position: number): Selection => {
+  static createCursor = (position: ?number): Selection => {
+    if(position == null) {
+      return new Selection([])
+    }
     return new Selection([new Range(position, position)])
   }
 
@@ -77,7 +80,7 @@ export default class Selection {
   }
 
   constructor (ranges: Array<Range>) {
-    this.ranges = ranges || []
+    this.ranges = ranges
   }
 
   // Return the more current selection information.
@@ -102,19 +105,16 @@ export default class Selection {
   }
 
   somethingSelected (): boolean {
-    for (let i: number = 0; i < this.ranges.length; i++) {
-      if (!this.ranges[i].isEmpty()) {
-        return true
-      }
-    }
-    return false
+    return this.ranges.some((range) => {
+      return !range.isEmpty()
+    })
   }
 
   // Update the selection with respect to an operation.
   transform (other: TextOperation): Selection {
-    for (var i: number = 0, newRanges: Array<Range> = []; i < this.ranges.length; i++) {
-      newRanges[i] = this.ranges[i].transform(other)
-    }
+    const newRanges = this.ranges.map((range: Range): Range => {
+      return range.transform(other)
+    })
     return new Selection(newRanges)
   }
 }

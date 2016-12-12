@@ -148,7 +148,6 @@ export default class TextOperation {
   static fromJSON = (ops: Array<any>): TextOperation => {
     const o: TextOperation = new TextOperation()
     ops.forEach((op) => {
-      console.log(`operation ${op}`)
       if (isRetain(op)) {
         o.retain(op)
       } else if (isInsert(op)) {

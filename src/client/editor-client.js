@@ -17,13 +17,14 @@ export default class EditorClient extends Client {
   editorAdapter: Adapter
   undoManager: UndoManager
   clients: { [key: string]: clientData }
-  selection: ?Selection
+  selection: Selection
 
   constructor (revision: revisionData, clients: { [key: string]: clientData }, serverAdapter: Connector, editorAdapter: Adapter) {
     super(revision)
     this.serverAdapter = serverAdapter
     this.editorAdapter = editorAdapter
     this.undoManager = new UndoManager()
+    this.selection = Selection.createCursor()
 
     this.initializeClients(clients)
 
@@ -93,7 +94,9 @@ export default class EditorClient extends Client {
   applyUnredo (operation: WrappedOperation) {
     this.undoManager.add(operation.invert(this.editorAdapter.getValue()))
     this.editorAdapter.applyOperation(operation.wrapped)
-    this.selection = operation.meta.selectionAfter
+    if (operation.meta != null) {
+      this.selection = operation.meta.selectionAfter
+    }
     this.editorAdapter.setSelection(this.selection)
     this.applyClient(operation.wrapped)
   }
@@ -180,9 +183,9 @@ export default class EditorClient extends Client {
   }
 
   onSelectionChange () {
-    const oldSelection: ?Selection = this.selection
+    const oldSelection: Selection = this.selection
     this.updateSelection()
-    if (oldSelection && this.selection != null && this.selection.equals(oldSelection)) {
+    if (this.selection.equals(oldSelection)) {
       return
     }
     this.sendSelection(this.selection)
@@ -193,8 +196,8 @@ export default class EditorClient extends Client {
   }
 
   onBlur () {
-    this.selection = null
-    this.sendSelection(null)
+    this.selection = Selection.createCursor()
+    this.sendSelection(Selection.createCursor())
   }
 
   sendSelection (selection: selectionData) {

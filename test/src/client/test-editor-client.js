@@ -73,7 +73,7 @@ test('simulated editing session', (t) => {
   assertOutstanding(11, ' ')
   t.deepEqual(serverAdapter.sentOperation, [11, ' '])
   t.truthy(serverAdapter.sentSelectionWithOperation.equals(Selection.createCursor(12)))
-  t.deepEqual(serverAdapter.sentSelection, null)
+  t.deepEqual(serverAdapter.sentSelection, Selection.createCursor())
 
   // Someone inserts an extra white space between "lorem" and "Dolor"
   serverAdapter.trigger('operation', [5, ' ', 6])
@@ -133,7 +133,7 @@ test('simulated editing session', (t) => {
   // We switch to another program. The browser window and the editor lose their
   // focus.
   editorAdapter.trigger('blur')
-  t.deepEqual(serverAdapter.sentSelection, null)
+  t.deepEqual(serverAdapter.sentSelection, Selection.createCursor())
 
   // The operation that was sent a few moments ago gets acknowledged right away
   serverAdapter.trigger('ack')

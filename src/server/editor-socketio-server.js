@@ -18,8 +18,8 @@ class EditorSocketIOServer extends Server {
     this.users = {}
     this.docId = docId
     this.mayWrite = mayWrite || ((_: any, cb) => {
-        cb(true)
-      })
+      cb(true)
+    })
   }
 
   addClient (socket: Socket) {
