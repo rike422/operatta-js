@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "node-fetch": "^1.6.3",
-    "socket.io": "1.5.1",
-    "socket.io-client": "^1.5.1"
+    "socket.io": "^1.7.2",
+    "socket.io-client": "^1.7.2"
   },
   "devDependencies": {
     "ava": "avajs/ava#master",
@@ -45,7 +45,7 @@
     "eslint-plugin-standard": "^2.0.1",
     "fetch-mock": "^5.5.0",
     "fixpack": "^2.3.1",
-    "flow-bin": "^0.34.0",
+    "flow-bin": "^0.36.0",
     "jsdom": "^9.6.0",
     "mock-socket": "^6.0.1",
     "nyc": "^8.3.2",
