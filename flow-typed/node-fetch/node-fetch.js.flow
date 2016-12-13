@@ -1,0 +1,8 @@
+// Type definitions for node-fetch based on whatwg-fetch
+// Project: https://github.com/bitinn/node-fetch
+// Definitions by: Torsten Werner <https://github.com/torstenwerner>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+declare module "node-fetch" {
+  declare export default function fetch (url: string | Request, init?: RequestOptions): Promise<Response>;
+}
