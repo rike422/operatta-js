@@ -278,17 +278,7 @@ export default class TextOperation {
 
   // Pretty printing.
   toString (): string {
-    // map: build a new array by applying a function to every element in an old
-    // array.
-    const map: (_: any) => Array<string> = Array.prototype.map || function (fn): Array<string> {
-      const arr: Array<any> = this
-      const newArr: Array<string> = []
-      for (let i: number = 0, l: number = arr.length; i < l; i++) {
-        newArr[i] = fn(arr[i])
-      }
-      return newArr
-    }
-    return map.call(this.ops, (op: number): string => {
+    return this.ops.map((op: number): string => {
       if (isRetain(op)) {
         return `retain ${op}`
       } else if (isInsert(op)) {
