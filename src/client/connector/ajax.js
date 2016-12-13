@@ -80,7 +80,7 @@ export default class AjaxAdapter extends Connector {
     const url: string = this.path + this.renderRevisionPath()
     fetch(url, {
       headers: {
-        contentType: 'application/json'
+        'Content-Type': 'application/json'
       },
       timeout: 5000
     }).then((data) => {
@@ -103,7 +103,7 @@ export default class AjaxAdapter extends Connector {
       method: 'POST',
       body: JSON.stringify({ operation, selection }),
       headers: {
-        contentType: 'application/json'
+        'Content-Type': 'application/json'
       }
     }).catch((e) => {
       setTimeout(() => {
@@ -118,7 +118,7 @@ export default class AjaxAdapter extends Connector {
       method: 'POST',
       body: JSON.stringify(obj),
       headers: {
-        contentType: 'application/json'
+        'Content-Type': 'application/json'
       },
       timeout: 1000
     })
