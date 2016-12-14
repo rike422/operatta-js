@@ -1,5 +1,8 @@
 import React, { PropTypes } from 'react'
+import App from 'grommet/components/App';
+import Box from 'grommet/components/Box'
 import Codemirror from 'react-codemirror'
+import EditorMenu from './editor-menu'
 import { EditorClient, SocketIOClient, CodeMirrorAdapter } from '../lib/index'
 import io from 'socket.io-client'
 function beginsWith (a, b) { return a.slice(0, b.length) === b; }
@@ -25,13 +28,13 @@ export default class Editor extends React.Component {
   }
 
   onUndo () {
-    this.state.editor.redo();
-    this.state.editor.focus();
+    this.state.editor.cm.redo();
+    this.state.editor.cm.focus();
   }
 
   onRedo () {
-    this.state.editor.undo();
-    this.state.editor.focus();
+    this.state.editor.cm.undo();
+    this.state.editor.cm.focus();
   }
 
   onItalicClick () {
@@ -47,7 +50,7 @@ export default class Editor extends React.Component {
   }
 
   wrap (chars) {
-    const cm = this.state.editor
+    const cm = this.state.editor.cm
     cm.operation(() => {
       if (cm.somethingSelected()) {
         cm.replaceSelections(cm.getSelections().map(selection => {
@@ -96,7 +99,10 @@ export default class Editor extends React.Component {
       mode: 'markdown'
     }
     return (
-      <Codemirror value={this.state.code} options={option} ref="editor" onChange={this.onChange.bind(this)} />
+      <App>
+        <EditorMenu onRedo={this.onRedo.bind(this)} onUndo={this.onUndo.bind(this)} onCode={this.onCodeClick.bind(this)} />
+        <Codemirror value={this.state.code} options={option} ref="editor" onChange={this.onChange.bind(this)} />
+      </App>
     )
   }
 }

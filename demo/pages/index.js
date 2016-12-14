@@ -27,7 +27,7 @@ export default class extends MicroContainer {
 
   render () {
     return (
-      <App>
+      <div centerd={false}>
         <Head>
           <title>My styled page</title>
           <link href="/static/main.css" rel="stylesheet" />
@@ -35,22 +35,18 @@ export default class extends MicroContainer {
         <Split separator={true}>
 
           <Box
-            justify="center"
-            align="center"
             wrap={true}
             margin="none">
             <Editor dispatch={this.dispatch} {...this.state} />
           </Box>
           <Box
-            justify="center"
-            align="center"
             wrap={true}
             margin="none"
           >
             <Previewer dispatch={this.dispatch} {...this.state} />
           </Box>
         </Split>
-      </App>
+      </div>
     )
   }
 }
