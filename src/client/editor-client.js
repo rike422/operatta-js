@@ -28,18 +28,13 @@ export default class EditorClient extends Client {
 
     this.initializeClients(clients)
 
-    const self: EditorClient = this
     this.editorAdapter.onChange(this.onChange.bind(this))
     this.editorAdapter.onSelectionChange(this.onSelectionChange.bind(this))
     this.editorAdapter.onBlur(this.onBlur.bind(this))
 
-    this.editorAdapter.registerUndo(() => {
-      self.undo()
-    })
+    this.editorAdapter.registerUndo(() => this.undo())
+    this.editorAdapter.registerRedo(() => this.redo())
 
-    this.editorAdapter.registerRedo(() => {
-      self.redo()
-    })
     this.serverAdapter.onAck(this.serverAck.bind(this))
     this.serverAdapter.onClientLeft(this.onClientLeft.bind(this))
     this.serverAdapter.onSetName(this.onSetName.bind(this))
