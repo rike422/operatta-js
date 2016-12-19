@@ -1,4 +1,4 @@
-import Connector from 'client/connector/connector'
+import Connector from 'client/connectors/connector'
 import Selection from 'client/selection'
 export default class ServerConnectorMock extends Connector {
   constructor () {

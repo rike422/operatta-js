@@ -1,7 +1,7 @@
 require('test/helpers/test-helper')
 import Selection, { Range } from 'client/selection'
 import EditorAdapterMock from 'test/helpers/mocks/editor-adapter-mock'
-import ServerConnectorMock from 'test/helpers/mocks/server-connectors-mock'
+import ServerConnectorMock from 'test/helpers/mocks/server-connector-mock'
 import EditorClient from 'client/editor-client'
 import TextOperation from 'ot/text-operation'
 import { Synchronized, AwaitingConfirm, AwaitingWithBuffer } from 'client/status/status'
