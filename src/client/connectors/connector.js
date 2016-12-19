@@ -5,6 +5,13 @@ import { onAck, onClientLeft, onSetName, onOperation, onSelection, onReconnect, 
 
 export default class Connector extends Eventable {
 
+  key: string
+
+  constructor (key: ?string) {
+    super()
+    this.key = key || ''
+  }
+
   onAck (fn: onAck) {
     this.on('ack', fn)
   }
