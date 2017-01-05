@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
-import App from 'grommet/components/App';
-import Box from 'grommet/components/Box'
+import Box from 'grommet/components/Box';
 import Codemirror from 'react-codemirror'
 import EditorMenu from './editor-menu'
 import { EditorClient, SocketIOClient, CodeMirrorAdapter } from '../lib/index'
@@ -74,8 +73,7 @@ export default class Editor extends React.Component {
       const cm = this.refs.editor.getCodeMirror();
       const cmAdapter = new CodeMirrorAdapter(cm)
       this.setState({ editor: cmAdapter })
-      const hostname = window.location.hostname
-      const socket = io(`http://${hostname}:28000`);
+      const socket = io(window.location.origin);
       socket.on("doc", (data) => {
         const { str, revision, clients } = data;
         cm.setValue(str);
@@ -99,10 +97,10 @@ export default class Editor extends React.Component {
       mode: 'markdown'
     }
     return (
-      <App>
+      <Box>
         <EditorMenu onRedo={this.onRedo.bind(this)} onUndo={this.onUndo.bind(this)} onCode={this.onCodeClick.bind(this)} />
         <Codemirror value={this.state.code} options={option} ref="editor" onChange={this.onChange.bind(this)} />
-      </App>
+      </Box>
     )
   }
 }
