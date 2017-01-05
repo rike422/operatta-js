@@ -3,7 +3,6 @@ import Head from 'next/head'
 import MicroContainer from 'react-micro-container'
 import Editor from '../components/editor'
 import Previewer from '../components/previewer'
-import App from 'grommet/components/App'
 import Split from 'grommet/components/Split'
 import Box from 'grommet/components/Box'
 
@@ -27,9 +26,9 @@ export default class extends MicroContainer {
 
   render () {
     return (
-      <div centerd={false}>
+      <Box centerd={false}>
         <Head>
-          <title>My styled page</title>
+          <title>operatta-js realtime demo</title>
           <link href="/static/main.css" rel="stylesheet" />
         </Head>
         <Split separator={true}>
@@ -46,7 +45,7 @@ export default class extends MicroContainer {
             <Previewer dispatch={this.dispatch} {...this.state} />
           </Box>
         </Split>
-      </div>
+      </Box>
     )
   }
 }
