@@ -4,11 +4,10 @@
   "description": "demo for operatta project",
   "main": "index.js",
   "scripts": {
-    "dev": " npm-run-all --parallel dev:server:*",
-    "dev:server:client": "node-dev server.js",
-    "dev:server:socket": "NODE_ENV=dev next",
+    "dev": "node-dev server.js",
     "build": "next build",
-    "start": "next start && node server.js",
+    "start": "NODE_ENV=production; node --harmony-async-await server.js",
+    "deploy": "now -e NODE_ENV=production",
     "preinstall": "rm -rf node_modules/operatta*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:css": "lessc styles/main.less static/main.css"
