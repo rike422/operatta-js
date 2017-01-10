@@ -23,7 +23,6 @@ class EditorSocketIOServer extends Server {
   }
 
   addClient (socket: Socket) {
-    const self: EditorSocketIOServer = this
     socket
       .join(this.docId)
       .emit('doc', {
@@ -32,31 +31,31 @@ class EditorSocketIOServer extends Server {
         clients: this.users
       })
       .on('operation', (revision: revisionData, operation: Array<any>, selection: Selection) => {
-        self.mayWrite(socket, (mayWrite: boolean) => {
+        this.mayWrite(socket, (mayWrite: boolean) => {
           // if (!mayWrite) {
           //   console.log("User doesn't have the right to edit.")
           //   return
           // }
-          self.onOperation(socket, revision, operation, selection)
+          this.onOperation(socket, revision, operation, selection)
         })
       })
       .on('selection', (obj) => {
-        self.mayWrite(socket, (mayWrite: boolean) => {
+        this.mayWrite(socket, (mayWrite: boolean) => {
           // if (!mayWrite) {
           //   console.log("User doesn't have the right to edit.")
           //   return
           // }
-          self.updateSelection(socket, obj && Selection.fromJSON(obj))
+          this.updateSelection(socket, obj && Selection.fromJSON(obj))
         })
       })
       .on('disconnect', () => {
         console.log('Disconnect')
-        socket.leave(self.docId)
-        self.onDisconnect(socket)
+        socket.leave(this.docId)
+        this.onDisconnect(socket)
         if (
           (socket.ns && Object.keys(socket.nsp.connected).length === 0)
         ) {
-          self.emit('empty-room')
+          this.emit('empty-room')
         }
       })
   }
