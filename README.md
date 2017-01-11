@@ -3,7 +3,7 @@
 * Documentation: http://operational-transformation.github.io/
 
 * Visualization: http://operational-transformation.github.io/visualization.html
-* Demo: https://operatta-demo-ervcvrxrce.now.sh
+* Demo: https://operatta-demo-yusckzwtfd.now.sh
 * License: [MIT license](https://github.com/rike422/operatta-js/blob/master/LICENSE)
 * Report bugs at https://github.com/rike422/operatta-js/issues
 
