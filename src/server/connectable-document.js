@@ -2,62 +2,33 @@
 import type { Socket } from 'socket.io'
 import TextOperation from 'ot/text-operation'
 import WrappedOperation from 'ot/wrapped-operation'
-import Server from './server'
-import { revisionData } from 'types/data'
-import Selection from 'client/selection'
+import Server from './document'
+import Link from './link'
 
 type mayWriteCb = ((socket: Socket, cb: (mayWrite: boolean) => void) => void);
 
 class ConnectableDocument extends Server {
   users: {}
   docId: string
-  mayWrite: mayWriteCb
+  authers: Array<Link>
+  pendings: Array<Link>
 
-  constructor (document: string, operations: Array<any>, docId: string, mayWrite: mayWriteCb) {
+  constructor (document: string, operations: Array<any>, docId: string, authers: Array<Link>) {
     super(document, operations)
     this.users = {}
     this.docId = docId
-    this.mayWrite = mayWrite || ((_: any, cb) => {
-      cb(true)
-    })
+    this.authers = authers
+    this.pendings = []
   }
 
-  addClient (socket: Socket) {
-    socket
-      .join(this.docId)
-      .emit('doc', {
-        str: this.document,
-        revision: this.operations.length,
-        clients: this.users
-      })
-      .on('operation', (revision: revisionData, operation: Array<any>, selection: Selection) => {
-        this.mayWrite(socket, (mayWrite: boolean) => {
-          // if (!mayWrite) {
-          //   console.log("User doesn't have the right to edit.")
-          //   return
-          // }
-          this.onOperation(socket, revision, operation, selection)
-        })
-      })
-      .on('selection', (obj) => {
-        this.mayWrite(socket, (mayWrite: boolean) => {
-          // if (!mayWrite) {
-          //   console.log("User doesn't have the right to edit.")
-          //   return
-          // }
-          this.updateSelection(socket, obj && Selection.fromJSON(obj))
-        })
-      })
-      .on('disconnect', () => {
-        console.log('Disconnect')
-        socket.leave(this.docId)
-        this.onDisconnect(socket)
-        if (
-          (socket.ns && Object.keys(socket.nsp.connected).length === 0)
-        ) {
-          this.emit('empty-room')
-        }
-      })
+  addClient (link: Link) {
+    this.pendings.push(pending)
+    const requests = this.authers.map((link: Link): Array<Promise<boolean>> => {
+      return link.requestAuthenticate(pending)
+    })
+    Promise.race(requests).then(() => {
+      link.on()
+    })
   }
 
   onOperation (socket: Socket, revision: revisionData, operation: Array<any>, selection: Selection) {
