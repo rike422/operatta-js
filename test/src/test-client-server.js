@@ -1,6 +1,6 @@
 import h from 'test/helpers/test-helper'
 import Client from 'client/client'
-import Server from 'server/server'
+import Document from 'server/document'
 
 class MyClient extends Client {
   constructor (userId, document, revision, channel) {
@@ -56,7 +56,7 @@ test('Test lientServerInteraction', (t) => {
   h.randomTest(50, () => {
     const document = h.randomString()
     let userId
-    const server = new Server(document)
+    const server = new Document(document)
 
     function serverReceive (msg) {
       userId = msg.userId
@@ -114,7 +114,7 @@ test('Test lientServerInteraction', (t) => {
       receiveRandom()
     }
 
-    t.deepEqual(server.document, client1.document)
+    t.deepEqual(server.content, client1.document)
     t.deepEqual(client1.document, client2.document)
   })
 })

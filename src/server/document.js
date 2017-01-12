@@ -3,14 +3,14 @@ import { revisionData } from 'types/data'
 import EventEmitter from 'events'
 import WrappedOperation from 'ot/wrapped-operation'
 
-// Constructor. Takes the current document as a string and optionally the array
+// Constructor. Takes the current content as a string and optionally the array
 // of all operations.
-export default class Server extends EventEmitter {
+export default class Document extends EventEmitter {
   operations: Array<any>
-  document: string
-  constructor (document: string, operations: Array<any>) {
+  content: string
+  constructor (content: string, operations: Array<any>) {
     super()
-    this.document = document
+    this.content = content
     this.operations = operations || []
   }
 
@@ -29,8 +29,8 @@ export default class Server extends EventEmitter {
       operation = transform(operation, concurrentOperations[i])[0]
     }
 
-    // ... and apply that on the document.
-    this.document = operation.apply(this.document)
+    // ... and apply that on the content.
+    this.content = operation.apply(this.content)
     // Store operation in history.
     this.operations.push(operation)
 
