@@ -8,7 +8,7 @@ import Selection from 'client/selection'
 
 type mayWriteCb = ((socket: Socket, cb: (mayWrite: boolean) => void) => void);
 
-class EditorSocketIOServer extends Server {
+class ConnectableDocument extends Server {
   users: {}
   docId: string
   mayWrite: mayWriteCb
@@ -114,4 +114,4 @@ class EditorSocketIOServer extends Server {
   }
 }
 
-export default EditorSocketIOServer
+export default ConnectableDocument

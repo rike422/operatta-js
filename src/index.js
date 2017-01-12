@@ -5,4 +5,4 @@ export { default as CodeMirrorAdapter } from 'client/adapters/codemirror-adapter
 export { default as SocketIOClient } from 'client/connectors/socketio'
 export { default as Selection } from 'client/selection'
 export { default as Document } from 'server/document'
-export { default as EditorSocketIOServer } from 'server/editor-socketio-server'
+export { default as EditorSocketIOServer } from 'connectable-document.js'
