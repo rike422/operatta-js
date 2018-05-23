@@ -240,9 +240,9 @@ ava-init@^0.1.0:
     the-argv "^1.0.0"
     write-pkg "^1.0.0"
 
-ava-spec@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ava-spec/-/ava-spec-1.0.1.tgz#90e325833fa06c4717185c2c00b235c7d159b3a6"
+ava-spec@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/ava-spec/-/ava-spec-1.1.1.tgz#924c35619349595d3ec820cea181d69f19c40d50"
   dependencies:
     fn-name "^2.0.1"
     option-chain "^0.1.0"
