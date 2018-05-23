@@ -43,7 +43,7 @@
     "eslint-plugin-flowtype": "2.29.1",
     "eslint-plugin-promise": "3.7.0",
     "eslint-plugin-standard": "2.0.1",
-    "fetch-mock": "5.6.2",
+    "fetch-mock": "5.13.1",
     "fixpack": "2.3.1",
     "flow-bin": "0.37.0",
     "jsdom": "9.8.3",
