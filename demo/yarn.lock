@@ -2142,9 +2142,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.4, graceful-fs@^4.1.6, graceful-fs@~4.1.9:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-grommet@1.10.1:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/grommet/-/grommet-1.10.1.tgz#5b24f6391ba2749996b3cfb96af71f810d3b4c78"
+grommet@1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/grommet/-/grommet-1.13.0.tgz#e3096b1f1e93349a43eecfacb32a5437c1687b7b"
   dependencies:
     classnames "^2.2.3"
     deep-assign "^2.0.0"
