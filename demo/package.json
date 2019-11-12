@@ -45,6 +45,6 @@
   "devDependencies": {
     "david": "9.0.0",
     "less": "2.7.2",
-    "nodemon": "1.11.0"
+    "nodemon": "1.19.4"
   }
 }
