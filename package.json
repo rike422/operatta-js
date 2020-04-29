@@ -52,7 +52,7 @@
     "power-assert": "1.4.2",
     "sinon": "1.17.6",
     "snazzy": "5.0.0",
-    "source-map-support": "0.4.6",
+    "source-map-support": "0.5.19",
     "standard": "8.6.0"
   },
   "files": [
