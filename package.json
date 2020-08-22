@@ -36,7 +36,7 @@
     "babel-preset-power-assert": "1.0.0",
     "babel-preset-react": "6.24.1",
     "babel-preset-stage-0": "6.24.1",
-    "codemirror": "5.38.0",
+    "codemirror": "5.57.0",
     "coveralls": "2.13.3",
     "eslint": "3.19.0",
     "eslint-config-standard": "6.2.1",
